@@ -37,248 +37,286 @@ export default function PortfolioCreative({ dossier }) {
     ? aboutParts.join(' ')
     : `Welcome to my portfolio. I focus on ${role} and bringing ideas to life with clarity and creativity.`;
 
+  const primarySkills = (skills.find((s) => s.category === 'programming') || { items: [] }).items || [];
+  const frameworkSkills = (skills.find((s) => s.category === 'fullstack') || { items: [] }).items || [];
+  const toolSkills = (skills.find((s) => s.category === 'tools') || { items: [] }).items || [];
+
+  const works = [
+    cap.title && {
+      title: cap.title,
+      subtitle: cap.role || 'Capstone project',
+    },
+    ...achievements.map((a) => ({
+      title: a.title,
+      subtitle: a.date || a.description || '',
+    })),
+  ].filter(Boolean);
+
+  const galleryCards = [
+    primarySkills.length > 0 && {
+      label: 'Tech Stack',
+      items: primarySkills.slice(0, 5),
+    },
+    frameworkSkills.length > 0 && {
+      label: 'Frameworks',
+      items: frameworkSkills.slice(0, 5),
+    },
+    (sportsArts.length > 0 || strengths.length > 0) && {
+      label: 'Beyond Work',
+      items: [
+        ...sportsArts.map((s) => s.name),
+        ...strengths.map((s) => s.name),
+      ].slice(0, 5),
+    },
+  ].filter(Boolean);
+
   return (
-    <div className="min-h-screen bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 antialiased">
-      {/* Top bar: logo / name + actions */}
-      <nav className="sticky top-0 z-50 border-b border-slate-200 dark:border-slate-800 bg-white/95 dark:bg-slate-950/95 backdrop-blur">
-        <div className="max-w-4xl mx-auto px-5 py-4 flex items-center justify-between">
-          <span className="font-display font-semibold text-slate-900 dark:text-white">
-            {name.split(' ')[0] || 'Portfolio'}
+    <div className="min-h-screen bg-slate-950 text-lime-100 antialiased">
+      {/* HERO */}
+      <section className="relative min-h-[70vh] flex flex-col justify-center items-center text-center px-6 bg-gradient-to-br from-lime-300 via-lime-400 to-lime-500 rounded-b-[36px] text-slate-900">
+        <h1 className="text-[40px] sm:text-[64px] md:text-[80px] lg:text-[96px] font-extrabold tracking-tight leading-none portfolio-reveal">
+          {name.toUpperCase()}
+        </h1>
+        <p className="mt-3 text-sm sm:text-base max-w-xl portfolio-reveal portfolio-reveal-delay-1">
+          {aboutText}
+        </p>
+        <nav className="flex flex-wrap justify-center gap-6 mt-8 text-xs sm:text-sm font-medium portfolio-reveal portfolio-reveal-delay-2">
+          <button
+            type="button"
+            onClick={() => document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' })}
+            className="hover:underline"
+          >
+            About
+          </button>
+          <button
+            type="button"
+            onClick={() => document.getElementById('works')?.scrollIntoView({ behavior: 'smooth' })}
+            className="hover:underline"
+          >
+            Work
+          </button>
+          <button
+            type="button"
+            onClick={() => document.getElementById('gallery')?.scrollIntoView({ behavior: 'smooth' })}
+            className="hover:underline"
+          >
+            Skills
+          </button>
+          <button
+            type="button"
+            onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
+            className="hover:underline"
+          >
+            Contact
+          </button>
+        </nav>
+
+        {role && (
+          <span className="mt-6 inline-flex items-center gap-2 rounded-full bg-slate-900/80 text-lime-200 px-4 py-1.5 text-xs font-semibold portfolio-reveal portfolio-reveal-delay-3">
+            <span className="inline-block w-2 h-2 rounded-full bg-emerald-400" />
+            {role}
           </span>
-          <div className="flex items-center gap-3">
-            <a
-              href={p.linkedIn || '#'}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-slate-500 hover:text-slate-900 dark:hover:text-white text-sm transition-colors"
-            >
-              Profile
-            </a>
-            <a
-              href={`mailto:${p.email || ''}`}
-              className="px-4 py-2 rounded-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-sm font-medium hover:opacity-90 transition-opacity"
-            >
-              Message
-            </a>
-          </div>
-        </div>
-      </nav>
+        )}
+      </section>
 
-      <main className="max-w-4xl mx-auto px-5 py-10 md:py-14">
-        {/* Identity block – name, handle, location, role (Wall of Portfolios style) */}
-        <header className="mb-12 md:mb-16">
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-display font-bold text-slate-900 dark:text-white tracking-tight">
-            {name}
-          </h1>
-          <p className="mt-2 text-slate-500 dark:text-slate-400 flex items-center gap-2 flex-wrap">
-            <span>@{name.replace(/\s+/g, '').toLowerCase()}</span>
-            {location && (
-              <>
-                <span className="text-slate-300 dark:text-slate-600">·</span>
-                <span className="flex items-center gap-1">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                  </svg>
-                  {location}
-                </span>
-              </>
-            )}
-          </p>
-          <div className="mt-4 flex flex-wrap items-center gap-2">
-            <span className="px-3 py-1.5 rounded-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-sm font-semibold">
-              {role}
-            </span>
-            <span className="px-3 py-1.5 rounded-full border-2 border-emerald-500 text-emerald-600 dark:text-emerald-400 text-sm font-medium">
-              Open to Work
-            </span>
-          </div>
-        </header>
-
-        {/* About – narrative paragraph */}
-        <section className="mb-12 md:mb-16">
-          <h2 className="text-sm font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-4">
+      <main className="max-w-5xl mx-auto px-6 py-14 md:py-16">
+        {/* ABOUT */}
+        <section
+          id="about"
+          className="py-10 text-center portfolio-reveal"
+        >
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 tracking-tight">
             About
           </h2>
-          <p className="text-slate-700 dark:text-slate-300 text-lg leading-relaxed max-w-3xl">
+          <p className="max-w-2xl mx-auto text-sm sm:text-base text-lime-200/90">
             {aboutText}
             {strengths.length > 0 && (
-              <span className="block mt-4 text-slate-600 dark:text-slate-400">
-                Discover how I can help bring your next project to life with a blend of {strengths.slice(0, 2).map((s) => s.name).join(' and ')}.
+              <span className="block mt-4 text-lime-300/90">
+                Known for{' '}
+                {strengths
+                  .map((s) => s.name)
+                  .filter(Boolean)
+                  .slice(0, 3)
+                  .join(', ')}
+                .
               </span>
             )}
           </p>
+          <div className="mt-10 flex justify-center">
+            <div className="w-52 h-52 rounded-full bg-lime-300 flex items-center justify-center shadow-2xl text-slate-900 font-display font-semibold text-xl uppercase tracking-wide">
+              {primarySkills.length > 0 ? 'Tech Stack' : 'Profile'}
+            </div>
+          </div>
         </section>
 
-        {/* Experience includes – skills as tags */}
-        {skillList.length > 0 && (
-          <section className="mb-12 md:mb-16">
-            <h2 className="text-sm font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-4">
-              Experience includes
-            </h2>
-            <div className="flex flex-wrap gap-2">
-              {skillList.map((s, i) => (
-                <SkillBadge key={i} name={s} />
-              ))}
-            </div>
-          </section>
-        )}
-
-        {/* Portfolio – featured project */}
-        {(cap?.title || cap?.role) && (
-          <section className="mb-12 md:mb-16">
-            <h2 className="text-sm font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-4">
-              Portfolio
-            </h2>
-            <div className="rounded-2xl border-2 border-slate-200 dark:border-slate-800 overflow-hidden bg-slate-50 dark:bg-slate-900/50">
-              <div className="p-6 md:p-8">
-                <h3 className="text-xl md:text-2xl font-display font-bold text-slate-900 dark:text-white">
-                  {cap.title}
-                </h3>
-                {cap.role && (
-                  <p className="mt-1 text-slate-500 dark:text-slate-400">{cap.role}</p>
-                )}
-                {(cap.responsibilities || []).length > 0 && (
-                  <p className="mt-4 text-slate-600 dark:text-slate-400 leading-relaxed">
-                    {(cap.responsibilities || [])[0]}
-                  </p>
-                )}
-                {(cap.techStack || []).length > 0 && (
-                  <div className="mt-5 flex flex-wrap gap-2">
-                    {(cap.techStack || []).map((t, i) => (
-                      <SkillBadge key={i} name={t} />
-                    ))}
-                  </div>
-                )}
-                <div className="mt-6 flex gap-3">
-                  <a
-                    href={`mailto:${p.email}?subject=Regarding ${cap.title || 'your project'}`}
-                    className="text-sm font-semibold text-slate-900 dark:text-white underline underline-offset-4 hover:no-underline"
-                  >
-                    Discuss project →
-                  </a>
-                  {p.github && (
-                    <a
-                      href={p.github}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-sm font-semibold text-slate-600 dark:text-slate-400 underline underline-offset-4 hover:text-slate-900 dark:hover:text-white"
-                    >
-                      View profile →
-                    </a>
-                  )}
-                </div>
-              </div>
-            </div>
-          </section>
-        )}
-
-        {/* Education & Achievements – two columns or stacked */}
-        {(edu.length > 0 || achievements.length > 0) && (
-          <section className="grid md:grid-cols-2 gap-10 md:gap-14 mb-12 md:mb-16">
-            {edu.length > 0 && (
-              <div>
-                <h2 className="text-sm font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-4">
-                  Education
-                </h2>
-                <ul className="space-y-4">
-                  {edu.map((e, i) => (
-                    <li key={i}>
-                      <p className="font-display font-semibold text-slate-900 dark:text-white">{e.degree}</p>
-                      <p className="mt-0.5 text-slate-600 dark:text-slate-400">{e.institution}</p>
-                      {(e.year || e.percentage) && (
-                        <p className="mt-1 text-slate-500 dark:text-slate-500 text-sm">
-                          {[e.year, e.percentage].filter(Boolean).join(' · ')}
-                        </p>
-                      )}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-            {achievements.length > 0 && (
-              <div>
-                <h2 className="text-sm font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-4">
-                  Achievements
-                </h2>
-                <ul className="space-y-3">
-                  {achievements.map((a, i) => (
-                    <li key={i}>
-                      <p className="font-semibold text-slate-900 dark:text-white">{a.title}</p>
-                      {a.description && (
-                        <p className="mt-0.5 text-slate-600 dark:text-slate-400 text-sm">{a.description}</p>
-                      )}
-                      {a.date && (
-                        <p className="mt-0.5 text-slate-500 text-sm">{a.date}</p>
-                      )}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-          </section>
-        )}
-
-        {volunteering.length > 0 && (
-          <section className="mb-12 md:mb-16">
-            <h2 className="text-sm font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-4">
-              Volunteering
-            </h2>
-            <ul className="space-y-2">
-              {volunteering.map((v, i) => (
-                <li key={i}>
-                  <span className="font-semibold text-slate-900 dark:text-white">{v.organization}</span>
-                  <span className="text-slate-600 dark:text-slate-400"> — {v.role}</span>
-                </li>
-              ))}
-            </ul>
-          </section>
-        )}
-
-        {(sportsArts.length > 0 || strengths.length > 0) && (
-          <section className="mb-12 md:mb-16">
-            <h2 className="text-sm font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-4">
-              Beyond work
-            </h2>
-            <p className="text-slate-600 dark:text-slate-400">
-              {[...(sportsArts.map((s) => s.name)), ...(strengths.map((s) => s.name))].join(' · ')}
-            </p>
-          </section>
-        )}
-
-        {/* CTA – Message */}
-        <section className="pt-8 border-t border-slate-200 dark:border-slate-800">
-          <p className="text-slate-600 dark:text-slate-400 mb-4">
-            Interested in working together?
-          </p>
-          <a
-            href={`mailto:${p.email || ''}`}
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-semibold hover:opacity-90 transition-opacity"
+        {/* WORKS – capstone + achievements */}
+        {works.length > 0 && (
+          <section
+            id="works"
+            className="py-10 portfolio-reveal portfolio-reveal-delay-1"
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-            </svg>
-            Message
-          </a>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-8 text-center tracking-tight">
+              Work
+            </h2>
+            <div className="space-y-4 max-w-3xl mx-auto">
+              {works.map((item, index) => (
+                <button
+                  key={index}
+                  type="button"
+                  className="w-full flex justify-between items-center border-b border-lime-900/60 py-4 text-left group"
+                >
+                  <div>
+                    <span className="block text-sm sm:text-base font-medium text-lime-50">
+                      {item.title}
+                    </span>
+                    {item.subtitle && (
+                      <span className="block text-xs text-lime-300/80 mt-1">
+                        {item.subtitle}
+                      </span>
+                    )}
+                  </div>
+                  <span className="text-lime-200 group-hover:translate-x-1 transition-transform">
+                    <svg
+                      className="w-4 h-4"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="M5 12h14" />
+                      <path d="M13 6l6 6-6 6" />
+                    </svg>
+                  </span>
+                </button>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* GALLERY – skills / beyond work cards */}
+        {galleryCards.length > 0 && (
+          <section
+            id="gallery"
+            className="py-10 text-center portfolio-reveal portfolio-reveal-delay-2"
+          >
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-8 tracking-tight">
+              Skills & Focus
+            </h2>
+            <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+              {galleryCards.map((card, i) => (
+                <div
+                  key={card.label}
+                  className="h-52 rounded-3xl bg-gradient-to-br from-lime-300/80 to-lime-500/80 text-slate-900 shadow-xl flex flex-col justify-between p-5 text-left"
+                >
+                  <div>
+                    <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-800/80">
+                      {card.label}
+                    </p>
+                    <ul className="mt-3 space-y-1 text-sm">
+                      {card.items.map((item) => (
+                        <li key={item} className="flex items-center gap-2">
+                          <span className="w-1.5 h-1.5 rounded-full bg-slate-900" />
+                          <span>{item}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                  <span className="text-[11px] text-slate-800/70">
+                    {i === 0 && 'Core technologies I work with.'}
+                    {i === 1 && 'Frameworks and platforms I use.'}
+                    {i === 2 && 'What keeps me inspired beyond code.'}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* EDUCATION / JOURNEY */}
+        {edu.length > 0 && (
+          <section className="py-10 portfolio-reveal portfolio-reveal-delay-3">
+            <h2 className="text-3xl sm:text-4xl font-bold mb-6 text-center tracking-tight">
+              Journey
+            </h2>
+            <div className="mt-4 border-t border-lime-900/60">
+              {edu.map((e, i) => (
+                <div
+                  key={i}
+                  className="flex flex-col sm:flex-row sm:items-center justify-between py-4 border-b border-lime-900/40 text-sm"
+                >
+                  <p className="text-lime-300/80 w-full sm:w-1/5">
+                    {e.year || ''}
+                  </p>
+                  <p className="text-lime-50 font-medium w-full sm:w-2/5 mt-1 sm:mt-0">
+                    {e.institution}
+                  </p>
+                  <p className="text-lime-200/80 w-full sm:w-2/5 mt-1 sm:mt-0">
+                    {[e.degree, e.stream, e.percentage].filter(Boolean).join(' · ')}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* CONTACT */}
+        <section
+          id="contact"
+          className="py-12 text-center bg-gradient-to-br from-lime-300 via-lime-400 to-lime-500 rounded-3xl mt-8 text-slate-900 portfolio-reveal portfolio-reveal-delay-4"
+        >
+          <h2 className="text-3xl sm:text-4xl md:text-[40px] font-extrabold tracking-tight">
+            Let's work together
+          </h2>
+          <p className="mt-3 text-sm sm:text-base max-w-xl mx-auto text-slate-900/80">
+            {p.email
+              ? 'One email away from building something meaningful together.'
+              : 'Reach out to collaborate on your next project.'}
+          </p>
+          {p.email && (
+            <a
+              href={`mailto:${p.email}`}
+              className="inline-flex items-center justify-center mt-6 bg-slate-900 text-lime-200 px-7 py-3 rounded-full font-semibold shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-transform text-sm"
+            >
+              Get in touch
+            </a>
+          )}
         </section>
       </main>
 
-      <footer className="border-t border-slate-200 dark:border-slate-800 py-6 px-5 mt-12">
-        <div className="max-w-4xl mx-auto flex flex-wrap items-center justify-between gap-4 text-sm text-slate-500 dark:text-slate-500">
-          <span className="font-display font-semibold text-slate-700 dark:text-slate-400">{name}</span>
-          <div className="flex gap-6">
+      {/* FOOTER */}
+      <footer className="py-6 text-center border-t border-lime-900/60 text-xs text-lime-400/80 px-6 mt-10">
+        <div className="max-w-5xl mx-auto flex flex-wrap items-center justify-between gap-3">
+          <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight text-lime-200">
+            {name}
+          </h1>
+          <div className="flex flex-wrap gap-4 justify-center sm:justify-end">
             {p.email && (
-              <a href={`mailto:${p.email}`} className="hover:text-slate-900 dark:hover:text-white transition-colors">
+              <a
+                href={`mailto:${p.email}`}
+                className="hover:text-lime-100 transition-colors"
+              >
                 {p.email}
               </a>
             )}
             {p.linkedIn && (
-              <a href={p.linkedIn} target="_blank" rel="noopener noreferrer" className="hover:text-slate-900 dark:hover:text-white transition-colors">
+              <a
+                href={p.linkedIn}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-lime-100 transition-colors"
+              >
                 LinkedIn
               </a>
             )}
             {p.github && (
-              <a href={p.github} target="_blank" rel="noopener noreferrer" className="hover:text-slate-900 dark:hover:text-white transition-colors">
+              <a
+                href={p.github}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-lime-100 transition-colors"
+              >
                 GitHub
               </a>
             )}

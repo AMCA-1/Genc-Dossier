@@ -4,11 +4,13 @@ import { getDossierByShareId } from '../api/client';
 import PortfolioMinimal from '../components/portfolio/PortfolioMinimal';
 import PortfolioCard from '../components/portfolio/PortfolioCard';
 import PortfolioCreative from '../components/portfolio/PortfolioCreative';
+import DeveloperDark from '../components/portfolio/DeveloperDark';
 
 const TEMPLATES = {
   minimal: PortfolioMinimal,
   card: PortfolioCard,
   creative: PortfolioCreative,
+  developerDark: DeveloperDark,
 };
 
 export default function SharePortfolio() {

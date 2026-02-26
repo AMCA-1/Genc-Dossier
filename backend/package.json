@@ -17,6 +17,7 @@
     "mongodb": "^7.1.0",
     "mongoose": "^8.0.3",
     "nanoid": "^5.0.4",
+    "nodemon": "^3.1.14",
     "puppeteer": "^21.6.1"
   }
 }
