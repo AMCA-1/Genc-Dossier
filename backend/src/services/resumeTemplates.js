@@ -41,67 +41,201 @@ function getData(dossier) {
 }
 
 /** Classic: single column, clean typography, clear sections */
+// function classicTemplate(d) {
+//   const edu = section(d.education, (e) =>
+//     `<tr><td><strong>${escapeHtml(e.degree)}</strong> — ${escapeHtml(e.institution)} ${e.year ? `(${escapeHtml(e.year)})` : ''} ${e.stream ? ` · ${escapeHtml(e.stream)}` : ''} ${e.percentage ? ` · ${escapeHtml(e.percentage)}` : ''}</td></tr>`
+//   );
+//   const skillRows = section(d.skillGroups, (g) =>
+//     `<tr><td><strong>${escapeHtml(g.name)}:</strong> ${(g.items || []).map(escapeHtml).join(', ')}</td></tr>`
+//   );
+//   const cap = d.capstone;
+//   const capHtml = cap.title
+//     ? `<h3 style="margin:8px 0 4px;font-size:13px;">${d.capstone.title}</h3>
+//        ${cap.techStack?.length ? `<p style="margin:0 0 4px;font-size:11px;color:#444;">Tech: ${(cap.techStack || []).map(escapeHtml).join(', ')}</p>` : ''}
+//        ${cap.role ? `<p style="margin:0 0 4px;font-size:11px;">Role: ${escapeHtml(cap.role)}</p>` : ''}
+//        ${(cap.responsibilities || []).length ? `<ul style="margin:4px 0;padding-left:18px;font-size:11px;">${(cap.responsibilities || []).map((r) => `<li>${escapeHtml(r)}</li>`).join('')}</ul>` : ''}
+//        ${(cap.outcomes || []).length ? `<p style="margin:4px 0;font-size:11px;">Outcomes: ${(cap.outcomes || []).map(escapeHtml).join('; ')}</p>` : ''}`
+//     : '';
+//   const ach = section(d.achievements, (a) => `<li>${escapeHtml(a.title)} ${a.description ? `— ${escapeHtml(a.description)}` : ''} ${a.date ? `(${escapeHtml(a.date)})` : ''}</li>`);
+//   const vol = section(d.volunteering, (v) => `<li>${escapeHtml(v.organization)} — ${escapeHtml(v.role)} ${v.description ? escapeHtml(v.description) : ''}</li>`);
+//   const sports = section(d.sportsArts, (s) => `<li>${escapeHtml(s.name)}: ${escapeHtml(s.achievement || '')} ${s.level ? `(${escapeHtml(s.level)})` : ''}</li>`);
+//   const str = section(d.strengths, (s) => `<li><strong>${escapeHtml(s.name)}</strong>${s.description ? ` — ${escapeHtml(s.description)}` : ''}</li>`);
+
+//   return `
+// <!DOCTYPE html>
+// <html>
+// <head>
+//   <meta charset="utf-8">
+//   <title>Dossier — ${d.name}</title>
+//   <style>
+//     * { box-sizing: border-box; }
+//     body { font-family: 'Segoe UI', system-ui, sans-serif; font-size: 11px; line-height: 1.4; color: #222; max-width: 210mm; margin: 0 auto; padding: 12px; }
+//     h1 { font-size: 20px; margin: 0 0 4px; border-bottom: 2px solid #0ea5e9; padding-bottom: 6px; }
+//     h2 { font-size: 13px; margin: 14px 0 6px; color: #0c4a6e; text-transform: uppercase; letter-spacing: 0.5px; }
+//     ul { margin: 4px 0; padding-left: 18px; }
+//     table { width: 100%; border-collapse: collapse; }
+//     td { padding: 2px 0; vertical-align: top; }
+//     .meta { color: #555; font-size: 10px; margin-top: 2px; }
+//   </style>
+// </head>
+// <body>
+//   <h1>${d.name}</h1>
+//   <p class="meta">${d.role}${d.track ? ` · ${d.track}` : ''} | ${d.email} | ${d.phone} | ${d.location} | Cognizant ID: ${d.cognizantId}</p>
+
+//   <h2>Education</h2>
+//   <table>${edu || '<tr><td>—</td></tr>'}</table>
+
+//   <h2>Technical Skills</h2>
+//   <table>${skillRows || '<tr><td>—</td></tr>'}</table>
+
+//   <h2>Capstone Project</h2>
+//   ${capHtml || '<p>—</p>'}
+
+//   <h2>Achievements</h2>
+//   <ul>${ach || '<li>—</li>'}</ul>
+
+//   <h2>Volunteering</h2>
+//   <ul>${vol || '<li>—</li>'}</ul>
+
+//   <h2>Sports, Arts &amp; Accomplishments</h2>
+//   <ul>${sports || '<li>—</li>'}</ul>
+
+//   <h2>Strengths</h2>
+//   <ul>${str || '<li>—</li>'}</ul>
+// </body>
+// </html>`;
+// }
+
 function classicTemplate(d) {
+  // Helper to handle sections and return empty string if no data
+  const section = (arr, fn) => (arr && arr.length ? arr.map(fn).join('') : '');
+
   const edu = section(d.education, (e) =>
-    `<tr><td><strong>${escapeHtml(e.degree)}</strong> — ${escapeHtml(e.institution)} ${e.year ? `(${escapeHtml(e.year)})` : ''} ${e.stream ? ` · ${escapeHtml(e.stream)}` : ''} ${e.percentage ? ` · ${escapeHtml(e.percentage)}` : ''}</td></tr>`
+    `<tr>
+      <td style="padding-bottom: 8px;">
+        <div style="display: flex; justify-content: space-between;">
+          <strong>${escapeHtml(e.institution)}</strong>
+          <span>${e.year ? escapeHtml(e.year) : ''}</span>
+        </div>
+        <div style="font-style: italic;">${escapeHtml(e.degree)}${e.stream ? ` in ${escapeHtml(e.stream)}` : ''}</div>
+        ${e.percentage ? `<div style="font-size: 10px; color: #444;">Result: ${escapeHtml(e.percentage)}</div>` : ''}
+      </td>
+    </tr>`
   );
+
   const skillRows = section(d.skillGroups, (g) =>
-    `<tr><td><strong>${escapeHtml(g.name)}:</strong> ${(g.items || []).map(escapeHtml).join(', ')}</td></tr>`
+    `<tr><td style="padding: 2px 0;"><strong>${escapeHtml(g.name)}:</strong> ${(g.items || []).map(escapeHtml).join(', ')}</td></tr>`
   );
+
   const cap = d.capstone;
   const capHtml = cap.title
-    ? `<h3 style="margin:8px 0 4px;font-size:13px;">${d.capstone.title}</h3>
-       ${cap.techStack?.length ? `<p style="margin:0 0 4px;font-size:11px;color:#444;">Tech: ${(cap.techStack || []).map(escapeHtml).join(', ')}</p>` : ''}
-       ${cap.role ? `<p style="margin:0 0 4px;font-size:11px;">Role: ${escapeHtml(cap.role)}</p>` : ''}
-       ${(cap.responsibilities || []).length ? `<ul style="margin:4px 0;padding-left:18px;font-size:11px;">${(cap.responsibilities || []).map((r) => `<li>${escapeHtml(r)}</li>`).join('')}</ul>` : ''}
-       ${(cap.outcomes || []).length ? `<p style="margin:4px 0;font-size:11px;">Outcomes: ${(cap.outcomes || []).map(escapeHtml).join('; ')}</p>` : ''}`
-    : '';
-  const ach = section(d.achievements, (a) => `<li>${escapeHtml(a.title)} ${a.description ? `— ${escapeHtml(a.description)}` : ''} ${a.date ? `(${escapeHtml(a.date)})` : ''}</li>`);
-  const vol = section(d.volunteering, (v) => `<li>${escapeHtml(v.organization)} — ${escapeHtml(v.role)} ${v.description ? escapeHtml(v.description) : ''}</li>`);
-  const sports = section(d.sportsArts, (s) => `<li>${escapeHtml(s.name)}: ${escapeHtml(s.achievement || '')} ${s.level ? `(${escapeHtml(s.level)})` : ''}</li>`);
-  const str = section(d.strengths, (s) => `<li><strong>${escapeHtml(s.name)}</strong>${s.description ? ` — ${escapeHtml(s.description)}` : ''}</li>`);
+    ? `<div style="margin-bottom: 12px;">
+        <div style="display: flex; justify-content: space-between; align-items: baseline;">
+          <h3 style="margin: 0; font-size: 12px; text-transform: uppercase; color: #222;">${escapeHtml(cap.title)}</h3>
+          <span style="font-size: 10px; font-style: italic; color: #666;">Capstone Project</span>
+        </div>
+        ${cap.techStack?.length ? `<p style="margin: 2px 0; font-size: 10px; font-weight: 600; color: #555;">Technologies: ${(cap.techStack || []).map(escapeHtml).join(', ')}</p>` : ''}
+        ${cap.role ? `<p style="margin: 2px 0; font-style: italic;">Role: ${escapeHtml(cap.role)}</p>` : ''}
+        ${(cap.responsibilities || []).length ? `<ul style="margin: 4px 0; padding-left: 15px;">${(cap.responsibilities || []).map((r) => `<li>${escapeHtml(r)}</li>`).join('')}</ul>` : ''}
+        ${(cap.outcomes || []).length ? `<p style="margin: 4px 0; font-size: 11px;"><strong>Key Outcomes:</strong> ${(cap.outcomes || []).map(escapeHtml).join('; ')}</p>` : ''}
+      </div>`
+    : '<p>—</p>';
+
+  const ach = section(d.achievements, (a) => `<li style="margin-bottom: 2px;">${escapeHtml(a.title)} ${a.description ? `— ${escapeHtml(a.description)}` : ''} ${a.date ? `<span style="float:right; font-style: italic; color: #666;">${escapeHtml(a.date)}</span>` : ''}</li>`);
+  const vol = section(d.volunteering, (v) => `<li><strong>${escapeHtml(v.organization)}</strong> — ${escapeHtml(v.role)} ${v.description ? `<br><span style="color:#555;">${escapeHtml(v.description)}</span>` : ''}</li>`);
+  const sports = section(d.sportsArts, (s) => `<li>${escapeHtml(s.name)}: ${escapeHtml(s.achievement || '')} ${s.level ? `<em>(${escapeHtml(s.level)})</em>` : ''}</li>`);
+  const str = section(d.strengths, (s) => `<li><strong>${escapeHtml(s.name)}</strong>${s.description ? `: ${escapeHtml(s.description)}` : ''}</li>`);
 
   return `
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>Dossier — ${d.name}</title>
+  <title>${d.name} — Professional Dossier</title>
   <style>
-    * { box-sizing: border-box; }
-    body { font-family: 'Segoe UI', system-ui, sans-serif; font-size: 11px; line-height: 1.4; color: #222; max-width: 210mm; margin: 0 auto; padding: 12px; }
-    h1 { font-size: 20px; margin: 0 0 4px; border-bottom: 2px solid #0ea5e9; padding-bottom: 6px; }
-    h2 { font-size: 13px; margin: 14px 0 6px; color: #0c4a6e; text-transform: uppercase; letter-spacing: 0.5px; }
-    ul { margin: 4px 0; padding-left: 18px; }
+    @page { margin: 15mm; }
+    body { 
+      font-family: "Garamond", "Georgia", serif; 
+      font-size: 11.5px; 
+      line-height: 1.5; 
+      color: #1a1a1a; 
+      max-width: 800px; 
+      margin: 0 auto; 
+      background: #fff;
+    }
+    .header { text-align: center; margin-bottom: 20px; }
+    h1 { font-size: 26px; font-weight: normal; text-transform: uppercase; letter-spacing: 2px; margin: 0 0 5px 0; }
+    .contact-info { font-family: "Segoe UI", sans-serif; font-size: 10px; color: #555; text-transform: uppercase; letter-spacing: 0.5px; }
+    
+    h2 { 
+      font-size: 12px; 
+      font-weight: bold; 
+      text-transform: uppercase; 
+      border-bottom: 1px solid #333; 
+      margin: 18px 0 8px 0; 
+      padding-bottom: 2px;
+      letter-spacing: 1px;
+    }
+    
     table { width: 100%; border-collapse: collapse; }
-    td { padding: 2px 0; vertical-align: top; }
-    .meta { color: #555; font-size: 10px; margin-top: 2px; }
+    ul { margin: 4px 0; padding-left: 18px; list-style-type: square; }
+    li { margin-bottom: 4px; }
+    
+    .section-container { margin-bottom: 15px; }
+    .footer-note { font-size: 9px; color: #999; text-align: center; margin-top: 30px; border-top: 0.5px solid #eee; padding-top: 10px; }
   </style>
 </head>
 <body>
-  <h1>${d.name}</h1>
-  <p class="meta">${d.role}${d.track ? ` · ${d.track}` : ''} | ${d.email} | ${d.phone} | ${d.location} | Cognizant ID: ${d.cognizantId}</p>
 
-  <h2>Education</h2>
-  <table>${edu || '<tr><td>—</td></tr>'}</table>
+  <div class="header">
+    <h1>${d.name}</h1>
+    <div class="contact-info">
+      ${d.role} ${d.track ? `| ${d.track}` : ''}<br>
+      ${d.location} • ${d.phone} • ${d.email}<br>
+      <strong>Cognizant ID:</strong> ${d.cognizantId}
+    </div>
+  </div>
 
-  <h2>Technical Skills</h2>
-  <table>${skillRows || '<tr><td>—</td></tr>'}</table>
+  <section class="section-container">
+    <h2>Education</h2>
+    <table>${edu || '<tr><td>—</td></tr>'}</table>
+  </section>
 
-  <h2>Capstone Project</h2>
-  ${capHtml || '<p>—</p>'}
+  <section class="section-container">
+    <h2>Technical Expertise</h2>
+    <table>${skillRows || '<tr><td>—</td></tr>'}</table>
+  </section>
 
-  <h2>Achievements</h2>
-  <ul>${ach || '<li>—</li>'}</ul>
+  <section class="section-container">
+    <h2>Signature Project</h2>
+    ${capHtml}
+  </section>
 
-  <h2>Volunteering</h2>
-  <ul>${vol || '<li>—</li>'}</ul>
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+    <section>
+      <h2>Achievements</h2>
+      <ul>${ach || '<li>—</li>'}</ul>
+    </section>
+    <section>
+      <h2>Strengths</h2>
+      <ul>${str || '<li>—</li>'}</ul>
+    </section>
+  </div>
 
-  <h2>Sports, Arts &amp; Accomplishments</h2>
-  <ul>${sports || '<li>—</li>'}</ul>
+  <section class="section-container">
+    <h2>Volunteering & Leadership</h2>
+    <ul>${vol || '<li>—</li>'}</ul>
+  </section>
 
-  <h2>Strengths</h2>
-  <ul>${str || '<li>—</li>'}</ul>
+  <section class="section-container">
+    <h2>Extracurriculars</h2>
+    <ul>${sports || '<li>—</li>'}</ul>
+  </section>
+
+  <div class="footer-note">
+    References available upon request
+  </div>
+
 </body>
 </html>`;
 }

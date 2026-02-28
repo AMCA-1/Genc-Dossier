@@ -50,6 +50,10 @@ export default function PortfolioCard({ dossier }) {
     name: (s.category || 'Skills').charAt(0).toUpperCase() + (s.category || 'skills').slice(1),
   }));
 
+  const [openCategory, setOpenCategory] = useState(null);
+  // console.log(services)
+  // console.log(skills)
+
   const projectCards = [
     cap?.title && { title: cap.title, subtitle: cap.role || 'Featured project', emoji: '🎯' },
     achievements[0] && { title: achievements[0].title, subtitle: achievements[0].date || achievements[0].description || 'Achievement', emoji: '🏆' },
@@ -110,17 +114,16 @@ export default function PortfolioCard({ dossier }) {
   };
 
   return (
-    <div className="min-h-screen bg-creatix-bg text-creatix-white overflow-x-hidden font-sans">
+    <div className="min-h-screen bg-creatix-bg text-creatix-white overflow-x-hidden font-mono">
       {/* NAV */}
       <nav
-        className={`fixed top-0 left-0 right-0 z-[100] flex items-center justify-between px-6 md:px-12 py-4 md:py-5 border-b border-white/10 transition-all duration-300 ${
-          scrolled ? 'bg-creatix-bg/90 backdrop-blur-md py-3 shadow-lg' : 'bg-creatix-bg/80 backdrop-blur-sm'
-        }`}
+        className={`fixed top-0 left-0 right-0 z-[100] flex items-center justify-between px-6 md:px-12 py-4 md:py-5 border-b border-white/10 transition-all duration-300 ${scrolled ? 'bg-creatix-bg/90 backdrop-blur-md py-3 shadow-lg' : 'bg-creatix-bg/80 backdrop-blur-sm'
+          }`}
       >
         <button
           type="button"
           onClick={() => scrollTo('hero')}
-          className="flex items-center gap-2 font-syne font-extrabold text-lg text-creatix-white"
+          className="flex items-center gap-2 font-mono font-extrabold text-2xl text-creatix-white"
         >
           <span className="w-7 h-7 rounded-md bg-creatix-green flex items-center justify-center">
             <svg viewBox="0 0 16 16" fill="none" className="w-4 h-4 text-black">
@@ -135,11 +138,9 @@ export default function PortfolioCard({ dossier }) {
               <button
                 type="button"
                 onClick={() => scrollTo(item.toLowerCase())}
-                className={`text-sm font-medium transition-colors relative pb-0.5 border-none bg-transparent cursor-pointer ${
-                  activeSection === item.toLowerCase() ? 'text-creatix-white' : 'text-creatix-gray'
-                } hover:text-creatix-white after:absolute after:bottom-0 after:left-0 after:h-0.5 after:bg-creatix-green after:transition-all after:duration-300 ${
-                  activeSection === item.toLowerCase() ? 'after:w-full' : 'after:w-0 hover:after:w-full'
-                }`}
+                className={`text-sm font-medium transition-colors relative pb-0.5 border-none bg-transparent cursor-pointer ${activeSection === item.toLowerCase() ? 'text-creatix-white' : 'text-creatix-gray'
+                  } hover:text-creatix-white after:absolute after:bottom-0 after:left-0 after:h-0.5 after:bg-creatix-green after:transition-all after:duration-300 ${activeSection === item.toLowerCase() ? 'after:w-full' : 'after:w-0 hover:after:w-full'
+                  }`}
               >
                 {item}
               </button>
@@ -164,7 +165,7 @@ export default function PortfolioCard({ dossier }) {
               <span className="w-2.5 h-2.5 rounded-full bg-creatix-green shadow-[0_0_0_4px_rgba(181,242,61,0.2)] animate-pulse" />
               {role} · Portfolio
             </div>
-            <h1 className="font-syne font-extrabold text-3xl sm:text-4xl md:text-5xl leading-tight text-creatix-white mb-5 portfolio-reveal portfolio-reveal-delay-1">
+            <h1 className="font-mono font-extrabold text-4xl sm:text-4xl md:text-5xl leading-tight text-creatix-white mb-5 portfolio-reveal portfolio-reveal-delay-1">
               Hi, I'm <span className="text-creatix-green">{name.split(' ')[0] || 'Here'}</span>
               <br />
               {role}
@@ -223,7 +224,7 @@ export default function PortfolioCard({ dossier }) {
               key={s.label}
               className="fade-in flex flex-col items-center gap-1 p-5 rounded-xl border border-white/10 bg-creatix-card2 hover:border-creatix-green/30 hover:-translate-y-0.5 hover:shadow-xl transition-all"
             >
-              <div className="font-syne font-extrabold text-2xl text-creatix-white">
+              <div className="font-mono font-extrabold text-2xl text-creatix-white">
                 {s.num}
                 {s.plus && <span className="text-creatix-green">+</span>}
               </div>
@@ -240,7 +241,7 @@ export default function PortfolioCard({ dossier }) {
             <span className="inline-block bg-creatix-green/10 border border-creatix-green/25 text-creatix-green rounded-full py-1.5 px-4 text-xs font-semibold uppercase tracking-wider mb-5">
               About
             </span>
-            <h2 className="font-syne font-extrabold text-2xl md:text-3xl leading-tight mb-5">
+            <h2 className="font-mono font-extrabold text-2xl md:text-3xl leading-tight mb-5">
               Turning ideas into reality
             </h2>
             <p className="text-creatix-gray leading-relaxed mb-4">{aboutText}</p>
@@ -282,7 +283,7 @@ export default function PortfolioCard({ dossier }) {
               <span className="inline-block bg-creatix-green/10 border border-creatix-green/25 text-creatix-green rounded-full py-1.5 px-4 text-xs font-semibold uppercase tracking-wider mb-4">
                 Services & skills
               </span>
-              <h2 className="font-syne font-extrabold text-2xl md:text-3xl leading-tight">
+              <h2 className="font-mono font-extrabold text-2xl md:text-3xl leading-tight">
                 What I bring to the table
               </h2>
             </div>
@@ -293,23 +294,73 @@ export default function PortfolioCard({ dossier }) {
 
           <div className="grid md:grid-cols-2 gap-4 md:gap-6">
             <div className="flex flex-col gap-4">
-              {services.map((s, i) => (
-                <div
-                  key={s.num}
-                  className="fade-in bg-creatix-bg border border-white/10 rounded-2xl p-6 md:p-7 flex items-center justify-between cursor-default hover:border-creatix-green/35 hover:-translate-y-0.5 hover:shadow-xl transition-all relative overflow-hidden group"
-                >
-                  <div className="absolute inset-0 bg-gradient-to-br from-creatix-green/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                  <div className="flex items-center gap-5 relative">
-                    <span className="font-syne text-xs font-bold text-creatix-green bg-creatix-green/10 rounded-lg py-1.5 px-2.5">
-                      {s.num}
-                    </span>
-                    <span className="font-syne font-bold text-base">{s.name}</span>
+
+              {services.map((s) => {
+                const matchingSkills = skills.find(
+                  (sk) => sk.category.toLowerCase() === s.name.toLowerCase()
+                );
+
+                const isOpen = openCategory === s.name.toLowerCase();
+
+                return (
+                  <div key={s.num} className="w-full flex flex-col gap-3">
+                    {/* Service Card */}
+                    <div
+                      className={`bg-creatix-bg border rounded-2xl p-6 md:p-7 flex items-center justify-between transition-all relative overflow-hidden group 
+            ${isOpen ? 'border-creatix-green/50 shadow-lg' : 'border-white/10 hover:border-creatix-green/35'}`}
+                    >
+                      {/* Subtle Background Glow when open */}
+                      {isOpen && <div className="absolute inset-0 bg-creatix-green/5 pointer-events-none" />}
+
+                      <div className="flex items-center gap-5 relative z-10">
+                        <span className="font-mono text-xs font-bold text-creatix-green bg-creatix-green/10 rounded-lg py-1.5 px-2.5">
+                          {s.num}
+                        </span>
+                        <span className="font-mono font-bold text-base text-white">{s.name}</span>
+                      </div>
+
+                      <span
+                        onClick={() => setOpenCategory(isOpen ? null : s.name.toLowerCase())}
+                        className={`w-9 h-9 rounded-full flex items-center justify-center text-lg cursor-pointer transition-all z-20
+              ${isOpen
+                            ? 'bg-creatix-green text-black rotate-90 scale-110 shadow-[0_0_15px_rgba(0,255,143,0.4)]'
+                            : 'bg-creatix-green/10 text-creatix-green hover:bg-creatix-green hover:text-black hover:-rotate-45'}`}
+                      >
+                        →
+                      </span>
+                    </div>
+
+                    {/* SKILLS REVEAL - This pushes everything below it DOWN */}
+                    <div
+                      className={`grid transition-all duration-300 ease-in-out ${isOpen ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0 pointer-events-none'
+                        }`}
+                    >
+                      <div className="overflow-hidden">
+                        <div className="flex flex-wrap gap-2 px-6 py-4 bg-white/5 border border-white/5 rounded-2xl mb-2">
+                          {matchingSkills?.items.map((item, idx) => (
+                            <span
+                              key={idx}
+                              className="px-4 py-2 rounded-xl bg-creatix-green/10 border border-creatix-green/20 text-[12px] md:text-xs font-medium text-creatix-green uppercase tracking-wider"
+                            >
+                              {/* {typeof item === 'object' ? item.name : item} */}
+                              {console.log(item)}
+                              {item.split("").map((m1,id)=>(
+                                <span>{m1}</span>
+                              ))}
+                              
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                  <span className="w-9 h-9 rounded-full bg-creatix-green/10 text-creatix-green flex items-center justify-center text-lg group-hover:bg-creatix-green group-hover:text-black transition-all group-hover:-rotate-45">
-                    →
-                  </span>
-                </div>
-              ))}
+                );
+              })}
+
+
+
+
+
             </div>
             <div className="flex flex-col gap-4">
               <div className="fade-in bg-gradient-to-br from-[#1a2510] to-[#0d1708] border border-creatix-green/20 rounded-2xl p-8 flex flex-col gap-4">
@@ -339,13 +390,14 @@ export default function PortfolioCard({ dossier }) {
         </div>
       </section>
 
+
       {/* PROJECTS */}
       <section ref={projectsRef} id="projects" className="py-20 md:py-24 px-6 md:px-12 max-w-6xl mx-auto">
         <div className="fade-in mb-10">
           <span className="inline-block bg-creatix-green/10 border border-creatix-green/25 text-creatix-green rounded-full py-1.5 px-4 text-xs font-semibold uppercase tracking-wider mb-4">
             Projects
           </span>
-          <h2 className="font-syne font-extrabold text-2xl md:text-3xl">
+          <h2 className="font-mono font-extrabold text-2xl md:text-3xl">
             Recent <span className="text-creatix-green">work</span>
           </h2>
         </div>
@@ -372,7 +424,7 @@ export default function PortfolioCard({ dossier }) {
             <span className="inline-block bg-creatix-green/10 border border-creatix-green/25 text-creatix-green rounded-full py-1.5 px-4 text-xs font-semibold uppercase tracking-wider mb-4">
               Highlights
             </span>
-            <h2 className="font-syne font-extrabold text-2xl md:text-3xl">
+            <h2 className="font-mono font-extrabold text-2xl md:text-3xl">
               What I've <span className="text-creatix-green">achieved</span>
             </h2>
           </div>
@@ -382,14 +434,9 @@ export default function PortfolioCard({ dossier }) {
                 key={i}
                 className="fade-in bg-creatix-card2 border border-white/10 rounded-xl p-6 flex flex-col gap-3 hover:border-creatix-green/30 transition-all"
               >
-                <div className="flex gap-0.5">
-                  {[...Array(5)].map((_, j) => (
-                    <span key={j} className="text-creatix-green text-sm">★</span>
-                  ))}
-                </div>
-                <p className="text-creatix-gray text-sm leading-relaxed">"{r.review}"</p>
+                {/* <p className="text-creatix-gray text-sm leading-relaxed">"{r.review}"</p> */}
                 <div>
-                  <div className="font-syne font-bold text-sm">{r.name}</div>
+                  <div className="font-mono font-bold text-sm">{r.name}</div>
                   <div className="text-creatix-green text-xs">{r.role}</div>
                 </div>
               </div>
@@ -406,20 +453,20 @@ export default function PortfolioCard({ dossier }) {
               <span className="text-black/50">✦</span>
               {item}
             </div>
-                ))}
-              </div>
+          ))}
+        </div>
       </div>
 
       {/* FOOTER */}
       <footer ref={contactRef} id="contact" className="py-14 px-6 md:px-12 border-t border-white/10 bg-creatix-bg">
         <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-10 mb-12">
           <div className="md:col-span-2">
-            <div className="flex items-center gap-2 font-syne font-extrabold text-creatix-white mb-3">
+            <div className="flex items-center gap-2 font-mono font-extrabold text-creatix-white mb-3">
               <span className="w-7 h-7 rounded-md bg-creatix-green flex items-center justify-center">
                 <svg viewBox="0 0 16 16" fill="none" className="w-4 h-4 text-black">
                   <polygon points="8,1 15,14 1,14" fill="currentColor" />
                 </svg>
-                      </span>
+              </span>
               {name}
             </div>
             <p className="text-creatix-gray text-sm leading-relaxed max-w-xs">
@@ -428,7 +475,7 @@ export default function PortfolioCard({ dossier }) {
             </p>
           </div>
           <div>
-            <h4 className="font-syne font-bold text-sm mb-4">Profile</h4>
+            <h4 className="font-mono font-bold text-sm mb-4">Profile</h4>
             <ul className="list-none space-y-2">
               <li><button type="button" onClick={() => scrollTo('about')} className="text-creatix-gray text-sm hover:text-creatix-white transition-colors bg-none border-none cursor-pointer p-0">About</button></li>
               <li><button type="button" onClick={() => scrollTo('services')} className="text-creatix-gray text-sm hover:text-creatix-white transition-colors bg-none border-none cursor-pointer p-0">Skills</button></li>
@@ -436,37 +483,37 @@ export default function PortfolioCard({ dossier }) {
             </ul>
           </div>
           <div>
-            <h4 className="font-syne font-bold text-sm mb-4">Contact</h4>
+            <h4 className="font-mono font-bold text-sm mb-4">Contact</h4>
             <ul className="list-none space-y-2">
               {p.email && (
                 <li>
                   <a href={`mailto:${p.email}`} className="text-creatix-gray text-sm hover:text-creatix-white transition-colors">
                     {p.email}
                   </a>
-                  </li>
+                </li>
               )}
               {p.linkedIn && (
                 <li>
                   <a href={p.linkedIn} target="_blank" rel="noopener noreferrer" className="text-creatix-gray text-sm hover:text-creatix-white transition-colors">
                     LinkedIn
                   </a>
-                  </li>
+                </li>
               )}
               {p.github && (
                 <li>
                   <a href={p.github} target="_blank" rel="noopener noreferrer" className="text-creatix-gray text-sm hover:text-creatix-white transition-colors">
                     GitHub
                   </a>
-                  </li>
+                </li>
               )}
-              </ul>
+            </ul>
           </div>
         </div>
         <div className="max-w-6xl mx-auto pt-6 border-t border-white/10 flex flex-col sm:flex-row justify-between items-center gap-3 text-creatix-gray text-xs">
           <p>© {new Date().getFullYear()} {name}. All rights reserved.</p>
           <p>Built with portfolio builder</p>
         </div>
-        </footer>
+      </footer>
     </div>
   );
 }
