@@ -54,6 +54,16 @@ export default function StepCapstone({ data, update }) {
           <TagList items={cap.techStack || []} onChange={(v) => set('techStack', v)} placeholder="e.g. React, Node.js" />
         </label>
         <label className="block">
+          <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Project Description</span>
+          <textarea
+            type="text"
+            value={cap.description || ''}
+            onChange={(e) => set('description', e.target.value)}
+            className="mt-1 block w-full h-[150px] rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 px-3 py-2"
+            placeholder="e.g. Write your description of project"
+          />
+        </label>
+        <label className="block">
           <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Your role</span>
           <input
             type="text"

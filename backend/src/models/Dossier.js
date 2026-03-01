@@ -17,6 +17,7 @@ const skillGroupSchema = new mongoose.Schema({
 const projectSchema = new mongoose.Schema({
   title: String,
   techStack: [String],
+  description: String,
   role: String,
   responsibilities: [String],
   outcomes: [String],
