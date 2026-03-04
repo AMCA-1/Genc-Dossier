@@ -21,7 +21,7 @@ export default function StepEducation({ data, update }) {
       {list.map((edu, i) => (
         <div key={i} className="p-4 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 space-y-3">
           <div className="flex justify-between items-center">
-            <span className="text-sm font-medium text-slate-600 dark:text-slate-300">Entry {i + 1}</span>
+            <span className="text-sm font-medium text-slate-600 dark:text-slate-300">Qualification {i + 1}</span>
             <button type="button" onClick={() => remove(i)} className="text-red-600 dark:text-red-400 text-sm hover:underline">
               Remove
             </button>

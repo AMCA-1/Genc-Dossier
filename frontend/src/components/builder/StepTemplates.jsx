@@ -191,6 +191,7 @@ export default function StepTemplates({
                 features={RESUME_FEATURES[t.id] || RESUME_FEATURES.classic}
                 selected={data.resumeTemplateId === t.id}
                 onClick={() => update('resumeTemplateId', t.id)}
+             
               />
             ))}
           </div>

@@ -2,7 +2,7 @@
 const OPTIONS = [
   {
     id: 'pdf',
-    label: 'PDF only',
+    label: 'PDF Dossier',
     description: 'Download a printable resume. Pick a layout in the next step.',
     icon: (className) => (
       <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -12,7 +12,7 @@ const OPTIONS = [
   },
   {
     id: 'web',
-    label: 'Web portfolio only',
+    label: 'Web Portfolio Dossier',
     description: 'Get a shareable link. Choose a design in the next step.',
     icon: (className) => (
       <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -20,17 +20,17 @@ const OPTIONS = [
       </svg>
     ),
   },
-  {
-    id: 'both',
-    label: 'Both',
-    description: 'PDF resume and a web portfolio link. You’ll pick designs for each.',
-    icon: (className) => (
-      <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9" />
-      </svg>
-    ),
-  },
+  // {
+  //   id: 'both',
+  //   label: 'Both',
+  //   description: 'PDF resume and a web portfolio link. You’ll pick designs for each.',
+  //   icon: (className) => (
+  //     <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+  //       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+  //       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9" />
+  //     </svg>
+  //   ),
+  // },
 ];
 
 export default function StepOutput({ data, update }) {
