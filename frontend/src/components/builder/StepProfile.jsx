@@ -4,7 +4,7 @@ const inputClass =
 import { useState } from 'react';
 import { uploadProfilePhoto, deleteProfilePhoto } from '../../api/client';
 
-export default function StepProfile({ data, update, dossierId }) {
+export default function StepProfile({ data, update, dossierId, validationErrors = {} }) {
   const p = data.profile || {};
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState('');
@@ -41,6 +41,11 @@ export default function StepProfile({ data, update, dossierId }) {
       setUploading(false);
     }
   };
+
+  const renderError = (hasError) =>
+    hasError ? (
+      <p style={{ fontSize: 'small', color: 'red', marginTop: '4px' }}>Please fill this detail</p>
+    ) : null;
 
   return (
     <section className="space-y-6">
@@ -107,8 +112,10 @@ export default function StepProfile({ data, update, dossierId }) {
               value={p.email || ''}
               onChange={(e) => update('profile.email', e.target.value)}
               className={inputClass}
+              style={validationErrors['profile.email'] ? { border: '1px solid red' } : undefined}
               placeholder="email@example.com"
             />
+            {renderError(validationErrors['profile.email'])}
           </label>
           <label className="block">
             <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Phone</span>
@@ -117,8 +124,10 @@ export default function StepProfile({ data, update, dossierId }) {
               value={p.phone || ''}
               onChange={(e) => update('profile.phone', e.target.value)}
               className={inputClass}
+              style={validationErrors['profile.phone'] ? { border: '1px solid red' } : undefined}
               placeholder="+91 ..."
             />
+            {renderError(validationErrors['profile.phone'])}
           </label>
           <label className="block">
             <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Location</span>
@@ -127,8 +136,10 @@ export default function StepProfile({ data, update, dossierId }) {
               value={p.location || ''}
               onChange={(e) => update('profile.location', e.target.value)}
               className={inputClass}
+              style={validationErrors['profile.location'] ? { border: '1px solid red' } : undefined}
               placeholder="City, Country"
             />
+            {renderError(validationErrors['profile.location'])}
           </label>
           <label className="block">
             <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Role / Track</span>
@@ -137,8 +148,10 @@ export default function StepProfile({ data, update, dossierId }) {
               value={p.role || ''}
               onChange={(e) => update('profile.role', e.target.value)}
               className={inputClass}
+              style={validationErrors['profile.role'] ? { border: '1px solid red' } : undefined}
               placeholder="e.g. Programmer Analyst"
             />
+            {renderError(validationErrors['profile.role'])}
           </label>
           <label className="block">
             <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Cognizant ID</span>
@@ -147,8 +160,10 @@ export default function StepProfile({ data, update, dossierId }) {
               value={p.cognizantId || ''}
               onChange={(e) => update('profile.cognizantId', e.target.value)}
               className={inputClass}
+              style={validationErrors['profile.cognizantId'] ? { border: '1px solid red' } : undefined}
               placeholder="e.g. 123456"
             />
+            {renderError(validationErrors['profile.cognizantId'])}
           </label>
           <label className="block">
             <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Track</span>
@@ -157,8 +172,10 @@ export default function StepProfile({ data, update, dossierId }) {
               value={p.track || ''}
               onChange={(e) => update('profile.track', e.target.value)}
               className={inputClass}
+              style={validationErrors['profile.track'] ? { border: '1px solid red' } : undefined}
               placeholder="e.g. GenC Elevate"
             />
+            {renderError(validationErrors['profile.track'])}
           </label>
           <label className="block sm:col-span-2">
             <span className="text-sm font-medium text-slate-700 dark:text-slate-300">LinkedIn</span>
@@ -167,8 +184,10 @@ export default function StepProfile({ data, update, dossierId }) {
               value={p.linkedIn || ''}
               onChange={(e) => update('profile.linkedIn', e.target.value)}
               className={inputClass}
+              style={validationErrors['profile.linkedIn'] ? { border: '1px solid red' } : undefined}
               placeholder="https://linkedin.com/in/..."
             />
+            {renderError(validationErrors['profile.linkedIn'])}
           </label>
           <label className="block sm:col-span-2">
             <span className="text-sm font-medium text-slate-700 dark:text-slate-300">GitHub</span>
@@ -177,8 +196,10 @@ export default function StepProfile({ data, update, dossierId }) {
               value={p.github || ''}
               onChange={(e) => update('profile.github', e.target.value)}
               className={inputClass}
+              style={validationErrors['profile.github'] ? { border: '1px solid red' } : undefined}
               placeholder="https://github.com/..."
             />
+            {renderError(validationErrors['profile.github'])}
           </label>
         </div>
       </div>

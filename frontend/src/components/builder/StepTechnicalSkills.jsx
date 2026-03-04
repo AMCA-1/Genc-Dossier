@@ -1,5 +1,5 @@
 import { Trash2 } from 'lucide-react';
-function TagList({ items, onChange, placeholder }) {
+function TagList({ items, onChange, placeholder, baseKey, validationErrors = {} }) {
   const add = () => onChange([...(items || []), '']);
   const set = (i, v) => {
     const next = [...(items || [])];
@@ -18,7 +18,15 @@ function TagList({ items, onChange, placeholder }) {
             onChange={(e) => set(i, e.target.value)}
             placeholder={placeholder}
             className="flex-1 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 px-3 py-2"
+            style={
+              baseKey && validationErrors[`${baseKey}.${i}`]
+                ? { border: '1px solid red' }
+                : undefined
+            }
           />
+          {baseKey && validationErrors[`${baseKey}.${i}`] && (
+            <p style={{ fontSize: 'small', color: 'red' }}>Please fill this detail</p>
+          )}
           <button
             type="button"
             onClick={() => remove(i)}
@@ -43,7 +51,7 @@ const CATEGORIES = [
   { key: 'certifications', label: 'Certifications' },
 ];
 
-export default function StepTechnicalSkills({ data, update }) {
+export default function StepTechnicalSkills({ data, update, validationErrors = {} }) {
   const skills = data.technicalSkills || [];
 
   const getItems = (cat) => skills.find((s) => s.category === cat)?.items || [];
@@ -59,7 +67,13 @@ export default function StepTechnicalSkills({ data, update }) {
       {CATEGORIES.map(({ key, label }) => (
         <div key={key} className="p-4 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800">
           <h3 className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-3">{label}</h3>
-          <TagList items={getItems(key)} onChange={(items) => setItems(key, items)} placeholder="e.g. Java, Python" />
+          <TagList
+            items={getItems(key)}
+            onChange={(items) => setItems(key, items)}
+            placeholder="e.g. Java, Python"
+            baseKey={`technicalSkills.${key}`}
+            validationErrors={validationErrors}
+          />
         </div>
       ))}
     </section>

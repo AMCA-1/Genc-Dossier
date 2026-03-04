@@ -1,4 +1,4 @@
-export default function StepAchievements({ data, update }) {
+export default function StepAchievements({ data, update, validationErrors = {} }) {
   const achievements = data.achievements || [];
   const volunteering = data.volunteering || [];
 
@@ -39,21 +39,33 @@ export default function StepAchievements({ data, update }) {
               value={a.title || ''}
               onChange={(e) => changeAchievement(i, 'title', e.target.value)}
               className="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 px-3 py-2"
+              style={validationErrors[`achievements.${i}.title`] ? { border: '1px solid red' } : undefined}
             />
+            {validationErrors[`achievements.${i}.title`] && (
+              <p style={{ fontSize: 'small', color: 'red' }}>Please fill this detail</p>
+            )}
             <input
               type="text"
               placeholder="Description"
               value={a.description || ''}
               onChange={(e) => changeAchievement(i, 'description', e.target.value)}
               className="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 px-3 py-2"
+              style={validationErrors[`achievements.${i}.description`] ? { border: '1px solid red' } : undefined}
             />
+            {validationErrors[`achievements.${i}.description`] && (
+              <p style={{ fontSize: 'small', color: 'red' }}>Please fill this detail</p>
+            )}
             <input
               type="text"
               placeholder="Date"
               value={a.date || ''}
               onChange={(e) => changeAchievement(i, 'date', e.target.value)}
               className="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 px-3 py-2"
+              style={validationErrors[`achievements.${i}.date`] ? { border: '1px solid red' } : undefined}
             />
+            {validationErrors[`achievements.${i}.date`] && (
+              <p style={{ fontSize: 'small', color: 'red' }}>Please fill this detail</p>
+            )}
           </div>
         ))}
         <button
@@ -80,28 +92,44 @@ export default function StepAchievements({ data, update }) {
               value={v.organization || ''}
               onChange={(e) => changeVolunteering(i, 'organization', e.target.value)}
               className="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 px-3 py-2"
+              style={validationErrors[`volunteering.${i}.organization`] ? { border: '1px solid red' } : undefined}
             />
+            {validationErrors[`volunteering.${i}.organization`] && (
+              <p style={{ fontSize: 'small', color: 'red' }}>Please fill this detail</p>
+            )}
             <input
               type="text"
               placeholder="Role"
               value={v.role || ''}
               onChange={(e) => changeVolunteering(i, 'role', e.target.value)}
               className="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 px-3 py-2"
+              style={validationErrors[`volunteering.${i}.role`] ? { border: '1px solid red' } : undefined}
             />
+            {validationErrors[`volunteering.${i}.role`] && (
+              <p style={{ fontSize: 'small', color: 'red' }}>Please fill this detail</p>
+            )}
             <input
               type="text"
               placeholder="Description"
               value={v.description || ''}
               onChange={(e) => changeVolunteering(i, 'description', e.target.value)}
               className="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 px-3 py-2"
+              style={validationErrors[`volunteering.${i}.description`] ? { border: '1px solid red' } : undefined}
             />
+            {validationErrors[`volunteering.${i}.description`] && (
+              <p style={{ fontSize: 'small', color: 'red' }}>Please fill this detail</p>
+            )}
             <input
               type="text"
               placeholder="Duration"
               value={v.duration || ''}
               onChange={(e) => changeVolunteering(i, 'duration', e.target.value)}
               className="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 px-3 py-2"
+              style={validationErrors[`volunteering.${i}.duration`] ? { border: '1px solid red' } : undefined}
             />
+            {validationErrors[`volunteering.${i}.duration`] && (
+              <p style={{ fontSize: 'small', color: 'red' }}>Please fill this detail</p>
+            )}
           </div>
         ))}
         <button

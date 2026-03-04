@@ -7,24 +7,58 @@ import PortfolioCreative from '../components/portfolio/PortfolioCreative';
 import DeveloperDark from '../components/portfolio/DeveloperDark';
 
 const TEMPLATES = {
-  minimal: PortfolioMinimal,
-  card: PortfolioCard,
+  developer: PortfolioMinimal,
+  showcase: PortfolioCard,
   creative: PortfolioCreative,
-  developerDark: DeveloperDark,
+  'creative-pro': DeveloperDark,
 };
 
 export default function SharePortfolio() {
-  const { shareId } = useParams();
+  const { shareId, template, portfolioId } = useParams();
   const [dossier, setDossier] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    if (portfolioId) {
+      try {
+        const raw = localStorage.getItem('genc_portfolios');
+        const parsed = raw ? JSON.parse(raw) : [];
+        let list = [];
+        if (Array.isArray(parsed)) {
+          list = parsed;
+        } else if (parsed && typeof parsed === 'object') {
+          list = Object.entries(parsed).map(([id, value]) => ({
+            id,
+            template: 'developer',
+            data: value,
+          }));
+        }
+        const found = list.find((p) => p.id === portfolioId && p.template === template);
+        if (!found) {
+          setError('Portfolio not found');
+        } else {
+          setDossier(found.data);
+        }
+      } catch (e) {
+        setError(e.message || 'Failed to load portfolio');
+      } finally {
+        setLoading(false);
+      }
+      return;
+    }
+
+    if (!shareId) {
+      setError('Portfolio not found');
+      setLoading(false);
+      return;
+    }
+
     getDossierByShareId(shareId)
       .then(setDossier)
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false));
-  }, [shareId]);
+  }, [shareId, template, portfolioId]);
 
   if (loading) {
     return (
@@ -44,8 +78,8 @@ export default function SharePortfolio() {
     );
   }
 
-  const templateId = dossier.webPortfolioTemplateId || 'minimal';
-  const Component = TEMPLATES[templateId] || PortfolioMinimal;
+  const templateKey = template && TEMPLATES[template] ? template : 'developer';
+  const Component = TEMPLATES[templateKey] || PortfolioMinimal;
 
   return <Component dossier={dossier} />;
 }

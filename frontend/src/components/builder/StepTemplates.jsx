@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { getShareUrl, downloadPdf } from '../../api/client';
+import { downloadPdf } from '../../api/client';
 
 // —— PDF Resume template icons (document / layout style) ——
 const ResumeIconClassic = ({ className }) => (
@@ -128,8 +128,11 @@ export default function StepTemplates({
   loading,
   savedId,
   shareId,
+  portfolioId,
+  portfolioTemplate,
   resumeTemplates,
   webTemplates,
+  onValidateAll,
 }) {
   const [pdfLoading, setPdfLoading] = useState(false);
   const [pdfError, setPdfError] = useState('');
@@ -141,8 +144,8 @@ export default function StepTemplates({
   const showWeb = outputType === 'web' ;
 
   const handleCopyLink = () => {
-    if (!shareId) return;
-    const url = getShareUrl(shareId);
+    if (!portfolioId || !portfolioTemplate) return;
+    const url = `${window.location.origin}/portfolio/${portfolioTemplate}/${portfolioId}`;
     navigator.clipboard.writeText(url).then(() => {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
@@ -237,6 +240,9 @@ export default function StepTemplates({
           <button
             type="button"
             onClick={() => {
+              if (onValidateAll && !onValidateAll()) {
+                return;
+              }
               if (savedId) setHasClickedUpdate(true);
               save();
             }}
@@ -286,10 +292,10 @@ export default function StepTemplates({
                   {pdfLoading ? 'Generating…' : 'Download PDF'}
                 </button>
               )}
-              {showWeb && shareId && hasClickedUpdate && (
+              {showWeb && portfolioId && hasClickedUpdate && (
                 <>
                   <Link
-                    to={`/p/${shareId}`}
+                    to={`/portfolio/${portfolioTemplate}/${portfolioId}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-800 dark:bg-slate-700 text-white font-medium hover:bg-slate-900 dark:hover:bg-slate-600 transition-colors"

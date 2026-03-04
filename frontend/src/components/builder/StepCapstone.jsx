@@ -1,5 +1,5 @@
 import { Trash2 } from 'lucide-react';
-function TagList({ items, onChange, placeholder }) {
+function TagList({ items, onChange, placeholder, baseKey, validationErrors = {} }) {
   const add = () => onChange([...(items || []), '']);
   const set = (i, v) => {
     const next = [...(items || [])];
@@ -18,7 +18,15 @@ function TagList({ items, onChange, placeholder }) {
             onChange={(e) => set(i, e.target.value)}
             placeholder={placeholder}
             className="flex-1 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 px-3 py-2"
+            style={
+              baseKey && validationErrors[`${baseKey}.${i}`]
+                ? { border: '1px solid red' }
+                : undefined
+            }
           />
+          {baseKey && validationErrors[`${baseKey}.${i}`] && (
+            <p style={{ fontSize: 'small', color: 'red' }}>Please fill this detail</p>
+          )}
           <button
             type="button"
             onClick={() => remove(i)}
@@ -36,7 +44,7 @@ function TagList({ items, onChange, placeholder }) {
   );
 }
 
-export default function StepCapstone({ data, update }) {
+export default function StepCapstone({ data, update, validationErrors = {} }) {
   const cap = data.capstoneProject || {};
 
   const set = (field, value) => update('capstoneProject', { ...cap, [field]: value });
@@ -52,12 +60,22 @@ export default function StepCapstone({ data, update }) {
             value={cap.title || ''}
             onChange={(e) => set('title', e.target.value)}
             className="mt-1 block w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 px-3 py-2"
+            style={validationErrors['capstoneProject.title'] ? { border: '1px solid red' } : undefined}
             placeholder="e.g. E-commerce Platform"
           />
+          {validationErrors['capstoneProject.title'] && (
+            <p style={{ fontSize: 'small', color: 'red' }}>Please fill this detail</p>
+          )}
         </label>
         <label className="block">
           <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Tech stack (add one per line)</span>
-          <TagList items={cap.techStack || []} onChange={(v) => set('techStack', v)} placeholder="e.g. React, Node.js" />
+          <TagList
+            items={cap.techStack || []}
+            onChange={(v) => set('techStack', v)}
+            placeholder="e.g. React, Node.js"
+            baseKey="capstoneProject.techStack"
+            validationErrors={validationErrors}
+          />
         </label>
         <label className="block">
           <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Project Description</span>
@@ -66,8 +84,12 @@ export default function StepCapstone({ data, update }) {
             value={cap.description || ''}
             onChange={(e) => set('description', e.target.value)}
             className="mt-1 block w-full h-[150px] rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 px-3 py-2"
+            style={validationErrors['capstoneProject.description'] ? { border: '1px solid red' } : undefined}
             placeholder="e.g. Write your description of project"
           />
+          {validationErrors['capstoneProject.description'] && (
+            <p style={{ fontSize: 'small', color: 'red' }}>Please fill this detail</p>
+          )}
         </label>
         <label className="block">
           <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Your role</span>
@@ -76,16 +98,32 @@ export default function StepCapstone({ data, update }) {
             value={cap.role || ''}
             onChange={(e) => set('role', e.target.value)}
             className="mt-1 block w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 px-3 py-2"
+            style={validationErrors['capstoneProject.role'] ? { border: '1px solid red' } : undefined}
             placeholder="e.g. Full Stack Developer"
           />
+          {validationErrors['capstoneProject.role'] && (
+            <p style={{ fontSize: 'small', color: 'red' }}>Please fill this detail</p>
+          )}
         </label>
         <label className="block">
           <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Responsibilities</span>
-          <TagList items={cap.responsibilities || []} onChange={(v) => set('responsibilities', v)} placeholder="One per line" />
+          <TagList
+            items={cap.responsibilities || []}
+            onChange={(v) => set('responsibilities', v)}
+            placeholder="One per line"
+            baseKey="capstoneProject.responsibilities"
+            validationErrors={validationErrors}
+          />
         </label>
         <label className="block">
           <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Key outcomes</span>
-          <TagList items={cap.outcomes || []} onChange={(v) => set('outcomes', v)} placeholder="One per line" />
+          <TagList
+            items={cap.outcomes || []}
+            onChange={(v) => set('outcomes', v)}
+            placeholder="One per line"
+            baseKey="capstoneProject.outcomes"
+            validationErrors={validationErrors}
+          />
         </label>
       </div>
     </section>

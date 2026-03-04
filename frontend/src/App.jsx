@@ -24,6 +24,7 @@ export default function App() {
           <Route path="app/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
         </Route>
         <Route path="p/:shareId" element={<SharePortfolio />} />
+        <Route path="portfolio/:template/:portfolioId" element={<SharePortfolio />} />
       </Routes>
     </AuthProvider>
   );

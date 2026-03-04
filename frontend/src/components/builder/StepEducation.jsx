@@ -1,4 +1,4 @@
-export default function StepEducation({ data, update }) {
+export default function StepEducation({ data, update, validationErrors = {} }) {
   const list = data.education || [];
 
   const add = () => {
@@ -33,35 +33,55 @@ export default function StepEducation({ data, update }) {
               value={edu.degree || ''}
               onChange={(e) => change(i, 'degree', e.target.value)}
               className="rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 px-3 py-2"
+              style={validationErrors[`education.${i}.degree`] ? { border: '1px solid red' } : undefined}
             />
+            {validationErrors[`education.${i}.degree`] && (
+              <p style={{ fontSize: 'small', color: 'red', gridColumn: '1 / -1' }}>Please fill this detail</p>
+            )}
             <input
               type="text"
               placeholder="Institution"
               value={edu.institution || ''}
               onChange={(e) => change(i, 'institution', e.target.value)}
               className="rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 px-3 py-2"
+              style={validationErrors[`education.${i}.institution`] ? { border: '1px solid red' } : undefined}
             />
+            {validationErrors[`education.${i}.institution`] && (
+              <p style={{ fontSize: 'small', color: 'red', gridColumn: '1 / -1' }}>Please fill this detail</p>
+            )}
             <input
               type="text"
               placeholder="Year"
               value={edu.year || ''}
               onChange={(e) => change(i, 'year', e.target.value)}
               className="rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 px-3 py-2"
+              style={validationErrors[`education.${i}.year`] ? { border: '1px solid red' } : undefined}
             />
+            {validationErrors[`education.${i}.year`] && (
+              <p style={{ fontSize: 'small', color: 'red', gridColumn: '1 / -1' }}>Please fill this detail</p>
+            )}
             <input
               type="text"
               placeholder="Stream"
               value={edu.stream || ''}
               onChange={(e) => change(i, 'stream', e.target.value)}
               className="rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 px-3 py-2"
+              style={validationErrors[`education.${i}.stream`] ? { border: '1px solid red' } : undefined}
             />
+            {validationErrors[`education.${i}.stream`] && (
+              <p style={{ fontSize: 'small', color: 'red', gridColumn: '1 / -1' }}>Please fill this detail</p>
+            )}
             <input
               type="text"
               placeholder="Percentage / CGPA"
               value={edu.percentage || ''}
               onChange={(e) => change(i, 'percentage', e.target.value)}
               className="rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 px-3 py-2 sm:col-span-2"
+              style={validationErrors[`education.${i}.percentage`] ? { border: '1px solid red' } : undefined}
             />
+            {validationErrors[`education.${i}.percentage`] && (
+              <p style={{ fontSize: 'small', color: 'red', gridColumn: '1 / -1' }}>Please fill this detail</p>
+            )}
           </div>
         </div>
       ))}

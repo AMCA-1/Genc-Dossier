@@ -79,6 +79,14 @@ const STEPS = [
 ];
 
 const PROFILE_DOSSIER_KEY = 'genc_dossier_profile';
+const PORTFOLIOS_KEY = 'genc_portfolios';
+
+const getTemplateSlug = (templateId) => {
+  if (templateId === 'card') return 'showcase';
+  if (templateId === 'creative') return 'creative';
+  if (templateId === 'developerDark') return 'creative-pro';
+  return 'developer';
+};
 
 const initialDossier = {
   profile: { name: '', email: '', phone: '', location: '', cognizantId: '', role: '', track: '', linkedIn: '', github: '' },
@@ -130,8 +138,11 @@ export default function Builder() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [loaded, setLoaded] = useState(false);
+  const [validationErrors, setValidationErrors] = useState({});
+  const [portfolios, setPortfolios] = useState([]);
 
   const storageKey = user?.email ? `${PROFILE_DOSSIER_KEY}_${user.email}` : null;
+  const portfoliosKey = PORTFOLIOS_KEY;
 
   useEffect(() => {
     getResumeTemplates().then(setResumeTemplates).catch(console.error);
@@ -161,6 +172,24 @@ export default function Builder() {
         }
       })
       .catch(() => {});
+
+    try {
+      const rawPortfolios = localStorage.getItem(portfoliosKey);
+      if (rawPortfolios) {
+        const parsed = JSON.parse(rawPortfolios);
+        if (Array.isArray(parsed)) {
+          setPortfolios(parsed);
+        } else if (parsed && typeof parsed === 'object') {
+          const migrated = Object.entries(parsed).map(([id, value]) => ({
+            id,
+            template: 'developer',
+            data: value,
+          }));
+          setPortfolios(migrated);
+          localStorage.setItem(portfoliosKey, JSON.stringify(migrated));
+        }
+      }
+    } catch (_) {}
   }, [storageKey]);
 
   const update = (path, value) => {
@@ -195,6 +224,48 @@ export default function Builder() {
           localStorage.setItem(storageKey, JSON.stringify(data));
         } catch (_) {}
       }
+
+      try {
+        const raw = localStorage.getItem(portfoliosKey);
+        let list = [];
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (Array.isArray(parsed)) {
+            list = parsed;
+          } else if (parsed && typeof parsed === 'object') {
+            list = Object.entries(parsed).map(([id, value]) => ({
+              id,
+              template: 'developer',
+              data: value,
+            }));
+          }
+        }
+
+        const templateId = data.webPortfolioTemplateId || initialDossier.webPortfolioTemplateId;
+        const templateSlug = getTemplateSlug(templateId);
+
+        let entry = list.find((p) => p.template === templateSlug);
+        if (!entry) {
+          let newId;
+          try {
+            if (window.crypto?.randomUUID) {
+              newId = window.crypto.randomUUID();
+            } else {
+              newId = Math.random().toString(16).slice(2) + Date.now().toString(16);
+            }
+          } catch (_) {
+            newId = Math.random().toString(16).slice(2) + Date.now().toString(16);
+          }
+          entry = { id: newId, template: templateSlug, data };
+          list.push(entry);
+        } else {
+          entry.data = data;
+        }
+
+        localStorage.setItem(portfoliosKey, JSON.stringify(list));
+        setPortfolios(list);
+      } catch (_) {}
+
       return true;
     } catch (e) {
       setError(e.message);
@@ -204,8 +275,108 @@ export default function Builder() {
     }
   };
 
+  const computeStepErrors = (stepId, currentData) => {
+    const errs = {};
+
+    if (stepId === 'profile') {
+      const p = currentData.profile || {};
+      if (!p.email?.trim()) errs['profile.email'] = true;
+      if (!p.phone?.trim()) errs['profile.phone'] = true;
+      if (!p.location?.trim()) errs['profile.location'] = true;
+      if (!p.role?.trim()) errs['profile.role'] = true;
+      if (!p.cognizantId?.trim()) errs['profile.cognizantId'] = true;
+      if (!p.track?.trim()) errs['profile.track'] = true;
+      if (!p.linkedIn?.trim()) errs['profile.linkedIn'] = true;
+      if (!p.github?.trim()) errs['profile.github'] = true;
+    }
+
+    if (stepId === 'education') {
+      const list = currentData.education || [];
+      list.forEach((edu, index) => {
+        if (!edu.degree?.trim()) errs[`education.${index}.degree`] = true;
+        if (!edu.institution?.trim()) errs[`education.${index}.institution`] = true;
+        if (!edu.year?.trim()) errs[`education.${index}.year`] = true;
+        if (!edu.stream?.trim()) errs[`education.${index}.stream`] = true;
+        if (!edu.percentage?.trim()) errs[`education.${index}.percentage`] = true;
+      });
+    }
+
+    if (stepId === 'skills') {
+      const skills = currentData.technicalSkills || [];
+      skills.forEach((group) => {
+        const cat = group.category;
+        (group.items || []).forEach((item, index) => {
+          if (!item?.trim()) errs[`technicalSkills.${cat}.${index}`] = true;
+        });
+      });
+    }
+
+    if (stepId === 'capstone') {
+      const cap = currentData.capstoneProject || {};
+      if (!cap.title?.trim()) errs['capstoneProject.title'] = true;
+      if (!cap.description?.trim()) errs['capstoneProject.description'] = true;
+      if (!cap.role?.trim()) errs['capstoneProject.role'] = true;
+      (cap.techStack || []).forEach((item, index) => {
+        if (!item?.trim()) errs[`capstoneProject.techStack.${index}`] = true;
+      });
+      (cap.responsibilities || []).forEach((item, index) => {
+        if (!item?.trim()) errs[`capstoneProject.responsibilities.${index}`] = true;
+      });
+      (cap.outcomes || []).forEach((item, index) => {
+        if (!item?.trim()) errs[`capstoneProject.outcomes.${index}`] = true;
+      });
+    }
+
+    if (stepId === 'achievements') {
+      const achievements = currentData.achievements || [];
+      achievements.forEach((a, index) => {
+        if (!a.title?.trim()) errs[`achievements.${index}.title`] = true;
+        if (!a.description?.trim()) errs[`achievements.${index}.description`] = true;
+        if (!a.date?.trim()) errs[`achievements.${index}.date`] = true;
+      });
+      const volunteering = currentData.volunteering || [];
+      volunteering.forEach((v, index) => {
+        if (!v.organization?.trim()) errs[`volunteering.${index}.organization`] = true;
+        if (!v.role?.trim()) errs[`volunteering.${index}.role`] = true;
+        if (!v.description?.trim()) errs[`volunteering.${index}.description`] = true;
+        if (!v.duration?.trim()) errs[`volunteering.${index}.duration`] = true;
+      });
+    }
+
+    return errs;
+  };
+
+  const validateStep = (index) => {
+    const s = STEPS[index];
+    if (!s) return true;
+    const stepId = s.id;
+    const stepErrors = computeStepErrors(stepId, data);
+
+    setValidationErrors((prev) => {
+      const next = { ...prev };
+      Object.keys(next).forEach((key) => {
+        if (key.startsWith(`${stepId}.`)) delete next[key];
+      });
+      return { ...next, ...stepErrors };
+    });
+
+    return Object.keys(stepErrors).length === 0;
+  };
+
+  const validateAllRequiredSections = () => {
+    const sectionIds = ['profile', 'education', 'skills', 'capstone', 'achievements'];
+    const allErrors = {};
+    sectionIds.forEach((id) => {
+      Object.assign(allErrors, computeStepErrors(id, data));
+    });
+    setValidationErrors(allErrors);
+    return Object.keys(allErrors).length === 0;
+  };
+
   const currentStep = STEPS[step];
   const StepComponent = currentStep?.component;
+  const currentTemplateSlug = getTemplateSlug(data.webPortfolioTemplateId || initialDossier.webPortfolioTemplateId);
+  const currentPortfolio = portfolios.find((p) => p.template === currentTemplateSlug) || null;
 
   return (
     <div className="min-h-[80vh] bg-slate-50 dark:bg-slate-900/50">
@@ -237,7 +408,13 @@ export default function Builder() {
               <button
                 key={s.id}
                 type="button"
-                onClick={() => setStep(i)}
+                onClick={() => {
+                  if (i > step) {
+                    const ok = validateStep(step);
+                    if (!ok) return;
+                  }
+                  setStep(i);
+                }}
                 className={`shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 border ${
                   isActive
                     ? 'bg-primary-600 text-white border-primary-600 shadow-md'
@@ -272,12 +449,21 @@ export default function Builder() {
                 loading={loading}
                 savedId={savedId}
                 shareId={shareId}
+                portfolioId={currentPortfolio?.id}
+                portfolioTemplate={currentTemplateSlug}
                 resumeTemplates={resumeTemplates}
                 webTemplates={webTemplates}
-                onNext={() => setStep((s) => Math.min(s + 1, STEPS.length - 1))}
+                validationErrors={validationErrors}
+                onNext={() => {
+                  const ok = validateStep(step);
+                  if (ok) {
+                    setStep((s) => Math.min(s + 1, STEPS.length - 1));
+                  }
+                }}
                 onPrev={() => setStep((s) => Math.max(s - 1, 0))}
                 isFirst={step === 0}
                 isLast={step === STEPS.length - 1}
+                onValidateAll={validateAllRequiredSections}
               />
             )}
           </div>
@@ -295,6 +481,8 @@ export default function Builder() {
               <button
                 type="button"
                 onClick={async () => {
+                  const valid = validateStep(step);
+                  if (!valid) return;
                   const ok = await save();
                   if (ok) setStep((s) => Math.min(s + 1, STEPS.length - 1));
                 }}
