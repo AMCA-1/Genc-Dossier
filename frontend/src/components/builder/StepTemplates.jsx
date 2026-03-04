@@ -137,8 +137,8 @@ export default function StepTemplates({
   const [hasClickedUpdate, setHasClickedUpdate] = useState(false);
 
   const outputType = data.outputType || 'both';
-  const showPdf = outputType === 'pdf' || outputType === 'both';
-  const showWeb = outputType === 'web' || outputType === 'both';
+  const showPdf = outputType === 'pdf' ;
+  const showWeb = outputType === 'web' ;
 
   const handleCopyLink = () => {
     if (!shareId) return;
@@ -330,6 +330,8 @@ export default function StepTemplates({
           </div>
         )}
       </div>
+
+      
     </section>
   );
 }

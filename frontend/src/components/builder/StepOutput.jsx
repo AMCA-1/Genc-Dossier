@@ -38,7 +38,7 @@ export default function StepOutput({ data, update }) {
 
   const handleSelect = (id) => {
     update('outputType', id);
-    update('enableWebPortfolio', id === 'web' || id === 'both');
+    update('enableWebPortfolio', id === 'web');
   };
 
   return (
