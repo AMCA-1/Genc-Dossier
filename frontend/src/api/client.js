@@ -133,16 +133,16 @@ export function getShareUrl(shareId) {
 }
 
 export async function uploadProfilePhoto(dossierId, file) {
+  if (!file) throw new Error('No file provided');
   const formData = new FormData();
   formData.append('photo', file);
-  formData.append('dossierId', dossierId);
+  if (dossierId != null) formData.append('dossierId', dossierId);
 
   const res = await fetch(`${API}/upload/profile-photo`, {
     method: 'POST',
     headers: authOnlyHeaders(),
     body: formData,
   });
-  console.log("Upload response:", res);
 
   if (!res.ok) {
     const error = await res.json().catch(() => ({}));
@@ -153,7 +153,10 @@ export async function uploadProfilePhoto(dossierId, file) {
 }
 
 export async function deleteProfilePhoto(dossierId) {
-  const res = await fetch(`${API}/upload/profile-photo/${dossierId}`, {
+  const url = dossierId
+    ? `${API}/upload/profile-photo/${dossierId}`
+    : `${API}/upload/profile-photo`;
+  const res = await fetch(url, {
     method: 'DELETE',
     headers: authOnlyHeaders(),
   });

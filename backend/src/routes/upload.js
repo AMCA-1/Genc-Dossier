@@ -79,7 +79,10 @@ console.log("This is uploaded "+upload)
 
 router.post('/profile-photo', authMiddleware, upload.single('photo'), async (req, res) => {
   try {
- 
+    if (!req.file || !req.file.buffer) {
+      return res.status(400).json({ error: 'No file provided' });
+    }
+
     // 1️⃣ Find dossier for this user
     let dossier = await Dossier.findOne({ userId: req.user._id });
  
@@ -109,21 +112,43 @@ router.post('/profile-photo', authMiddleware, upload.single('photo'), async (req
  
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "Upload failed" });
+    res.status(500).json({ error: error.message || 'Upload failed' });
   }
 });
 
+/**
+ * DELETE /api/upload/profile-photo
+ * Remove profile photo for current user (finds dossier by userId)
+ */
+router.delete('/profile-photo', authMiddleware, async (req, res) => {
+  try {
+    const dossier = await Dossier.findOne({ userId: req.user._id });
+    if (!dossier) {
+      return res.status(404).json({ error: 'Dossier not found' });
+    }
+    if (!dossier.profile?.photoUrl) {
+      return res.status(400).json({ error: 'No photo to delete' });
+    }
+    await deletePhotoFromCloudinary(dossier.profile.photoUrl);
+    dossier.profile = dossier.profile || {};
+    dossier.profile.photoUrl = undefined;
+    await dossier.save();
+    res.json({ success: true, message: 'Photo deleted successfully' });
+  } catch (error) {
+    console.error('Delete error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
 
 /**
  * DELETE /api/upload/profile-photo/:dossierId
- * Remove profile photo from Cloudinary and dossier
+ * Remove profile photo from Cloudinary and dossier (when dossierId is known)
  */
 router.delete('/profile-photo/:dossierId', authMiddleware, async (req, res) => {
   try {
     const { dossierId } = req.params;
 
-    // Verify dossier belongs to the authenticated user
-    const dossier = await Dossier.findOne({ _id: dossierId, userId: req.user._id});
+    const dossier = await Dossier.findOne({ _id: dossierId, userId: req.user._id });
     if (!dossier) {
       return res.status(404).json({ error: 'Dossier not found' });
     }
@@ -132,10 +157,8 @@ router.delete('/profile-photo/:dossierId', authMiddleware, async (req, res) => {
       return res.status(400).json({ error: 'No photo to delete' });
     }
 
-    // Delete from Cloudinary
     await deletePhotoFromCloudinary(dossier.profile.photoUrl);
 
-    // Update dossier
     dossier.profile.photoUrl = undefined;
     await dossier.save();
 

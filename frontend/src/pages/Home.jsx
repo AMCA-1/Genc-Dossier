@@ -1,30 +1,29 @@
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { getLatestDossier } from '../api/client';
 
 export default function Home() {
+  const [isNewUser, setIsNewUser] = useState(true);
+  const [loading, setLoading] = useState(true);
 
- const userString = localStorage.getItem('genc_dossier_user');
-  console.log('User string from localStorage:', userString)
-// Initialize a default value
-let isNewUser = true; 
+  useEffect(() => {
+    getLatestDossier()
+      .then((dossier) => {
+        setIsNewUser(!(dossier && dossier._id));
+      })
+      .catch(() => {
+        setIsNewUser(true);
+      })
+      .finally(() => setLoading(false));
+  }, []);
 
-if (userString) {
-    // 2. Parse the string into an object
-    const user = JSON.parse(userString);
-    const userEmail = user.email; 
-
-    // 3. Access the profile using the exact key format seen in your logs
-    const profileDataRaw = localStorage.getItem(`genc_dossier_profile_${userEmail}`);
-    
-    if (profileDataRaw) {
-        const fullData = JSON.parse(profileDataRaw);
-
-        // 4. Check the cognizantId
-        const cogId = fullData.profile?.cognizantId;
-
-        // Logic: If ID exists and is NOT empty, isNewUser is false (they are an existing user)
-        isNewUser = !(cogId && cogId.trim() !== "");
-    }
-}
+  if (loading) {
+    return (
+      <div className="max-w-4xl mx-auto px-4 py-16 flex justify-center items-center min-h-[40vh]">
+        <p className="text-slate-600 dark:text-slate-400">Loading…</p>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-16">
