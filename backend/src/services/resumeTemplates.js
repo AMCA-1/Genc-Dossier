@@ -28,6 +28,9 @@ function getData(dossier) {
     phone: escapeHtml(p.phone || ''),
     location: escapeHtml(p.location || ''),
     cognizantId: escapeHtml(p.cognizantId || ''),
+    photoUrl: p.photoUrl || '',
+    linkedIn: escapeHtml(p.linkedIn || ''),
+    github: escapeHtml(p.github || ''),
     role: escapeHtml(p.role || ''),
     track: escapeHtml(p.track || ''),
     education: dossier.education || [],
@@ -41,599 +44,370 @@ function getData(dossier) {
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   CLASSIC – Vibrant Yellow-Green Modern Design
-   • Two-column layout with photo section
-   • Bright yellow-green (#C4E538) accent color
-   • Left sidebar with education, skills, certifications
-   • Right panel with profile, experience, achievements, references
-   • Modern typography with clean spacing
+   CLASSIC – Premium Web Portfolio Design
+   • High-impact split-hero header with profile image
+   • Glassmorphism card effects and deep visual hierarchy
+   • Custom-styled skill tags and accent iconography
+   • Optimized for a premium, single-page professional brand
 ───────────────────────────────────────────────────────────────────────────── */
 function classicTemplate(d) {
-  /* education entries */
+  /* education cards */
   const edu = section(
     d.education,
     (e) => `
-    <div class="edu-entry">
-      <div class="edu-badge">${e.year ? escapeHtml(e.year) : ''}</div>
-      <div class="edu-content">
-        <div class="edu-degree">${escapeHtml(e.degree)}</div>
-        <div class="edu-inst">${escapeHtml(e.institution)}${e.stream ? ` / ${escapeHtml(e.stream)}` : ''}</div>
+    <div class="card glass">
+      <div class="card-header">
+        <h3 class="card-title">${escapeHtml(e.degree)}</h3>
+        <span class="badge primary">${e.year ? escapeHtml(e.year) : ''}</span>
       </div>
-      ${e.percentage ? `<div class="edu-percent">${escapeHtml(e.percentage)}</div>` : ''}
+      <div class="card-subtitle">${escapeHtml(e.institution)}</div>
+      <div class="card-meta">
+        <span class="tag small">${escapeHtml(e.stream || '')}</span>
+        ${e.percentage ? `<span class="score">Result: ${escapeHtml(e.percentage)}%</span>` : ''}
+      </div>
     </div>`
   );
 
-  /* skills entries */
+  /* enhanced skills */
   const skillEntries = section(
     d.skillGroups,
     (g) => `
-    <div class="skill-entry">
-      <div class="skill-icon">●</div>
-      <div class="skill-text">
-        <div class="skill-name">${escapeHtml(g.name)}</div>
-        <div class="skill-bar">
-          <div class="skill-fill"></div>
-        </div>
+    <div class="skill-category">
+      <h4 class="skill-label">${escapeHtml(g.name)}</h4>
+      <div class="tag-cloud">
+        ${(g.items || []).map(item => `<span class="skill-tag">${escapeHtml(item)}</span>`).join('')}
       </div>
-    </div>
-    ${(g.items || []).slice(0, 3).map(item => `<div class="skill-item">${escapeHtml(item)}</div>`).join('')}`
+    </div>`
   );
 
-  /* achievements/experience */
+  /* achievement blocks */
   const ach = section(
     d.achievements,
     (a) => `
-    <div class="achievement-entry">
-      <div class="achievement-dot"></div>
-      <div class="achievement-content">
-        <div class="achievement-title">${escapeHtml(a.title)}</div>
-        ${a.description ? `<div class="achievement-desc">${escapeHtml(a.description)}</div>` : ''}
-        ${a.date ? `<div class="achievement-date">${escapeHtml(a.date)}</div>` : ''}
+    <div class="award-item">
+      <div class="award-icon">🏆</div>
+      <div class="award-content">
+        <div class="award-title">${escapeHtml(a.title)}</div>
+        ${a.description ? `<div class="award-desc">${escapeHtml(a.description)}</div>` : ''}
       </div>
     </div>`
   );
 
-  /* experience/capstone */
+  /* featured project */
   const cap = d.capstone;
   const capHtml = cap.title
-    ? `<div class="experience-entry">
-         <div class="exp-dot"></div>
-         <div class="exp-content">
-           <div class="exp-title">${escapeHtml(cap.title)}</div>
-           ${cap.role ? `<div class="exp-role">${escapeHtml(cap.role)}</div>` : ''}
-           ${cap.techStack?.length ? `<div class="exp-tech">${(cap.techStack || []).map(escapeHtml).join(', ')}</div>` : ''}
-           ${(cap.responsibilities || []).length ? `<ul class="exp-list">${(cap.responsibilities || []).map((r) => `<li>${escapeHtml(r)}</li>`).join('')}</ul>` : ''}
+    ? `<div class="project-showcase">
+         <div class="project-content">
+           <h3 class="project-name">${escapeHtml(cap.title)}</h3>
+           <div class="project-role-badge">${escapeHtml(cap.role)}</div>
+           <p class="project-desc">${escapeHtml(cap.description || '')}</p>
+           <div class="project-tech-bar">
+             ${(cap.techStack || []).map(t => `<span class="tech-pill">${escapeHtml(t)}</span>`).join('')}
+           </div>
+           ${(cap.responsibilities || []).length ? `
+             <ul class="project-bullets">
+               ${(cap.responsibilities || []).slice(0, 3).map((r) => `<li>${escapeHtml(r)}</li>`).join('')}
+             </ul>` : ''}
          </div>
        </div>`
     : '';
-
-  /* volunteering */
-  const vol = section(
-    d.volunteering,
-    (v) => `
-    <div class="volunteer-entry">
-      <div class="vol-dot"></div>
-      <div class="vol-content">
-        <div class="vol-org">${escapeHtml(v.organization)}</div>
-        <div class="vol-role">${escapeHtml(v.role)}</div>
-        ${v.description ? `<div class="vol-desc">${escapeHtml(v.description)}</div>` : ''}
-      </div>
-    </div>`
-  );
-
-  /* strengths as pills */
-  const str = section(
-    d.strengths,
-    (s) => `<span class="strength-pill">${escapeHtml(s.name)}</span>`
-  );
 
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>${d.name} — Professional Resume</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+  <title>${d.name} | Professional Portfolio</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --primary-yellow: #C4E538;
-      --dark-gray: #000000;
-      --light-gray: #F5F5F5;
-      --text-dark: #1A1A1A;
-      --text-light: #666666;
-      --accent-dark: #2D2D2D;
+      --primary: #4F46E5;
+      --primary-soft: #EEF2FF;
+      --accent: #0EA5E9;
+      --dark: #0F172A;
+      --text: #1E293B;
+      --muted: #475569;
       --white: #FFFFFF;
-      --border-color: #E0E0E0;
+      --glass: rgba(255, 255, 255, 0.8);
+      --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+      --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
     }
     
     * { box-sizing: border-box; margin: 0; padding: 0; }
     
     body {
-      font-family: 'Poppins', sans-serif;
-      font-size: 11pt;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 10pt;
       line-height: 1.6;
-      color: var(--text-dark);
-      background: var(--white);
-      max-width: 100%;
-      margin: 0;
+      color: var(--text);
+      background-color: #F8FAFC;
+      background-image: radial-gradient(at 0% 0%, #EEF2FF 0, transparent 50%), 
+                        radial-gradient(at 50% 0%, #F0F9FF 0, transparent 50%);
       padding: 0;
     }
 
-    .container {
-      display: flex;
-      min-height: 100vh;
-      background: var(--white);
-    }
-
-    /* ─── LEFT SIDEBAR ─── */
-    .sidebar {
-      width: 35%;
-      background: var(--light-gray);
-      padding: 40px 30px;
-      display: flex;
-      flex-direction: column;
-      gap: 30px;
-    }
-
-    .photo-section {
-      position: relative;
-      margin-bottom: 20px;
-    }
-
-    .photo-placeholder {
-      width: 100%;
-      aspect-ratio: 1;
-      background: var(--primary-yellow);
-      border-radius: 20px;
+    /* ─── PREMIUM HERO ─── */
+    .hero {
+      background: var(--dark);
+      color: var(--white);
+      padding: 30px 50px;
       display: flex;
       align-items: center;
-      justify-content: center;
-      color: var(--text-dark);
+      gap: 30px;
+      position: relative;
+      overflow: hidden;
+      border-bottom: 4px solid var(--primary);
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -50%; right: -20%;
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, rgba(79, 70, 229, 0.2) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .profile-img {
+      width: 110px; height: 110px;
+      border-radius: 24px;
+      object-fit: cover;
+      border: 3px solid rgba(255,255,255,0.1);
+      box-shadow: 0 15px 20px -5px rgb(0 0 0 / 0.1);
+      background: #1E293B;
+      flex-shrink: 0;
+    }
+
+    .hero-content { flex: 1; }
+
+    .hero-name {
+      font-family: 'Outfit', sans-serif;
+      font-size: 30pt;
+      font-weight: 700;
+      letter-spacing: -1.5px;
+      line-height: 1;
+      margin-bottom: 4px;
+      background: linear-gradient(to right, #fff, #E2E8F0);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero-role {
+      font-family: 'Outfit', sans-serif;
       font-size: 12pt;
       font-weight: 600;
-      overflow: hidden;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      margin-bottom: 12px;
     }
 
-    .photo-placeholder img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
+    .hero-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
     }
 
-    /* ─── SECTION TITLES ─── */
-    .sidebar-section {
-      margin-top: 0;
+    .contact-badge, .contact-link {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 8.5pt;
+      background: rgba(255,255,255,0.05);
+      padding: 6px 12px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.1);
+      color: #E2E8F0;
+      text-decoration: none;
+    }
+
+    .contact-link:hover {
+      background: rgba(255,255,255,0.1);
+      color: #FFFFFF;
+    }
+
+    /* ─── LAYOUT ─── */
+    .container {
+      max-width: 1000px;
+      margin: 20px auto;
+      padding: 0 40px;
+    }
+
+    .main-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 25px;
+    }
+
+    .section { margin-bottom: 25px; }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
     }
 
     .section-title {
-      font-family: 'Playfair Display', serif;
-      font-size: 20pt;
+      font-family: 'Outfit', sans-serif;
+      font-size: 15pt;
       font-weight: 700;
-      color: var(--text-dark);
-      margin-bottom: 15px;
-      position: relative;
-      padding-left: 15px;
+      color: var(--dark);
+      letter-spacing: -0.5px;
     }
 
-    .section-title::before {
-      content: '';
-      position: absolute;
-      left: 0;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 4px;
-      height: 20px;
-      background: var(--primary-yellow);
-      border-radius: 2px;
-    }
+    .line { flex: 1; height: 1px; background: #E2E8F0; }
 
-    /* ─── EDUCATION ─── */
-    .edu-entry {
+    /* ─── COMPONENTS ─── */
+    .card {
       background: var(--white);
       padding: 15px;
-      border-radius: 10px;
-      border-left: 4px solid var(--primary-yellow);
-      margin-bottom: 12px;
-      display: flex;
-      gap: 12px;
-    }
-
-    .edu-badge {
-      background: var(--primary-yellow);
-      color: var(--text-dark);
-      font-size: 9pt;
-      font-weight: 700;
-      padding: 6px 10px;
-      border-radius: 20px;
-      white-space: nowrap;
-      flex-shrink: 0;
-      height: fit-content;
-    }
-
-    .edu-content {
-      flex: 1;
-    }
-
-    .edu-degree {
-      font-size: 11pt;
-      font-weight: 700;
-      color: var(--text-dark);
-      margin-bottom: 2px;
-    }
-
-    .edu-inst {
-      font-size: 9pt;
-      color: var(--text-light);
-    }
-
-    .edu-percent {
-      font-size: 9pt;
-      color: var(--primary-yellow);
-      font-weight: 700;
-    }
-
-    /* ─── SKILLS ─── */
-    .skill-entry {
-      margin-bottom: 15px;
-      display: flex;
-      gap: 12px;
-      align-items: center;
-    }
-
-    .skill-icon {
-      color: var(--primary-yellow);
-      font-size: 20pt;
-      line-height: 1;
-      flex-shrink: 0;
-    }
-
-    .skill-text {
-      flex: 1;
-    }
-
-    .skill-name {
-      font-size: 10pt;
-      font-weight: 700;
-      color: var(--text-dark);
-      margin-bottom: 6px;
-    }
-
-    .skill-bar {
-      height: 6px;
-      background: var(--border-color);
-      border-radius: 3px;
-      overflow: hidden;
-    }
-
-    .skill-fill {
-      height: 100%;
-      background: var(--primary-yellow);
-      width: 85%;
-      border-radius: 3px;
-    }
-
-    .skill-item {
-      font-size: 9pt;
-      color: var(--text-light);
-      margin-left: 20px;
-      margin-bottom: 3px;
-    }
-
-    /* ─── RIGHT CONTENT ─── */
-    .content {
-      width: 65%;
-      padding: 40px 40px;
-      display: flex;
-      flex-direction: column;
-      gap: 30px;
-      background: var(--white);
-    }
-
-    /* ─── HEADER ─── */
-    .header {
+      border-radius: 16px;
+      border: 1px solid #F1F5F9;
+      box-shadow: var(--shadow-sm);
       margin-bottom: 10px;
     }
 
-    .name {
-      font-family: 'Playfair Display', serif;
-      font-size: 36pt;
-      font-weight: 800;
-      color: var(--text-dark);
-      line-height: 1.1;
-      margin-bottom: 5px;
-    }
+    .card.glass { background: var(--glass); backdrop-filter: blur(10px); }
 
-    .name .highlight {
-      color: var(--primary-yellow);
-    }
+    .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px; }
+    .card-title { font-size: 10.5pt; font-weight: 700; color: var(--dark); }
+    .badge { padding: 3px 10px; border-radius: 8px; font-size: 7.5pt; font-weight: 700; }
+    .badge.primary { background: var(--primary-soft); color: var(--primary); }
 
-    .title-badge {
-      display: inline-block;
-      background: var(--primary-yellow);
-      color: var(--text-dark);
-      font-size: 11pt;
-      font-weight: 700;
-      padding: 8px 20px;
-      border-radius: 25px;
-      margin-bottom: 15px;
-    }
+    .card-subtitle { font-size: 9.5pt; font-weight: 600; color: var(--muted); margin-bottom: 6px; }
+    .card-meta { display: flex; align-items: center; justify-content: space-between; }
 
-    .contact-info {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      font-size: 9.5pt;
-      color: var(--text-light);
-    }
+    .tag { padding: 3px 8px; background: #F8FAFC; border-radius: 6px; font-size: 8pt; color: var(--muted); font-weight: 600; }
+    .score { font-weight: 800; color: var(--primary); font-size: 8.5pt; }
 
-    .contact-item {
-      display: flex;
-      gap: 8px;
-      align-items: center;
-    }
+    /* ─── SKILLS ─── */
+    .skill-category { margin-bottom: 15px; }
+    .skill-label { font-size: 8pt; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+    .tag-cloud { display: flex; flex-wrap: wrap; gap: 6px; }
+    .skill-tag { background: var(--white); padding: 5px 12px; border-radius: 10px; font-size: 8.5pt; font-weight: 600; color: var(--dark); box-shadow: var(--shadow-sm); border: 1px solid #F1F5F9; }
 
-    .contact-icon {
-      color: var(--primary-yellow);
-      font-size: 10pt;
-    }
-
-    /* ─── SECTIONS ─── */
-    .content-section {
-      margin-bottom: 25px;
-    }
-
-    .content-title {
-      font-family: 'Playfair Display', serif;
-      font-size: 18pt;
-      font-weight: 700;
-      color: var(--text-dark);
-      margin-bottom: 15px;
-      position: relative;
-      padding-left: 15px;
-    }
-
-    .content-title::before {
-      content: '';
-      position: absolute;
-      left: 0;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 4px;
-      height: 18px;
-      background: var(--primary-yellow);
-      border-radius: 2px;
-    }
-
-    .profile-text {
-      font-size: 10pt;
-      color: var(--text-light);
-      line-height: 1.8;
-      background: var(--light-gray);
+    /* ─── PROJECTS ─── */
+    .project-showcase {
       padding: 15px;
-      border-radius: 10px;
-    }
-
-    /* ─── TIMELINE ENTRIES ─── */
-    .timeline {
+      border-radius: 16px;
       position: relative;
-      padding-left: 30px;
+      border: 1px solid #F1F5F9;
+      background: var(--white);
     }
 
-    .timeline::before {
-      content: '';
-      position: absolute;
-      left: 0;
-      top: 0;
-      bottom: 0;
-      width: 2px;
-      background: var(--primary-yellow);
-    }
+    .project-name { font-size: 13pt; font-weight: 800; color: var(--dark); margin-bottom: 4px; }
+    .project-role-badge { display: inline-block; color: var(--primary); font-weight: 700; font-size: 8.5pt; margin-bottom: 8px; }
+    .project-desc { font-size: 9pt; color: var(--text); margin-bottom: 12px; line-height: 1.5; }
 
-    .achievement-entry,
-    .experience-entry,
-    .volunteer-entry {
-      position: relative;
-      margin-bottom: 20px;
-      padding-bottom: 20px;
-    }
+    .project-tech-bar { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+    .tech-pill { background: var(--primary-soft); border: 1px solid var(--primary-soft); padding: 3px 10px; border-radius: 6px; font-size: 7.5pt; font-weight: 600; color: var(--primary); }
 
-    .achievement-dot,
-    .exp-dot,
-    .vol-dot {
-      position: absolute;
-      left: -18px;
-      top: 5px;
-      width: 12px;
-      height: 12px;
-      background: var(--primary-yellow);
-      border: 3px solid var(--white);
-      border-radius: 50%;
-      box-shadow: 0 0 0 2px var(--primary-yellow);
-    }
+    .project-bullets { padding-left: 18px; }
+    .project-bullets li { font-size: 9pt; color: var(--text); margin-bottom: 4px; }
 
-    .achievement-content,
-    .exp-content,
-    .vol-content {
-      padding-left: 0;
-    }
-
-    .achievement-title,
-    .exp-title,
-    .vol-org {
-      font-size: 11pt;
-      font-weight: 700;
-      color: var(--text-dark);
-      margin-bottom: 3px;
-    }
-
-    .achievement-desc,
-    .exp-role,
-    .vol-role {
-      font-size: 10pt;
-      color: var(--text-light);
-      margin-bottom: 5px;
-    }
-
-    .achievement-date {
-      font-size: 9pt;
-      color: var(--primary-yellow);
-      font-weight: 600;
-    }
-
-    .exp-tech,
-    .vol-desc {
-      font-size: 9.5pt;
-      color: var(--text-light);
-      margin-bottom: 5px;
-    }
-
-    .exp-list {
-      list-style: none;
-      padding: 0;
-      margin: 8px 0 0 0;
-    }
-
-    .exp-list li {
-      font-size: 9.5pt;
-      color: var(--text-light);
-      margin-bottom: 3px;
-      padding-left: 12px;
-      position: relative;
-    }
-
-    .exp-list li::before {
-      content: '●';
-      position: absolute;
-      left: 0;
-      color: var(--primary-yellow);
-    }
-
-    /* ─── STRENGTHS ─── */
-    .strengths-wrap {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-
-    .strength-pill {
-      display: inline-block;
-      background: var(--light-gray);
-      color: var(--text-dark);
-      font-size: 9.5pt;
-      font-weight: 600;
-      padding: 8px 14px;
-      border-radius: 20px;
-      border: 1px solid var(--border-color);
-    }
-
-    .empty {
-      color: var(--text-light);
-      font-style: italic;
-    }
+    /* ─── AWARDS ─── */
+    .award-item { display: flex; gap: 12px; margin-bottom: 10px; background: #fff; padding: 12px; border-radius: 14px; border: 1px solid #F1F5F9; }
+    .award-icon { font-size: 16pt; }
+    .award-title { font-weight: 700; color: var(--dark); font-size: 9.5pt; }
+    .award-desc { font-size: 8.5pt; color: var(--muted); }
 
     @media print {
-      body { margin: 0; padding: 0; }
-      .container { min-height: auto; }
-      .sidebar, .content { padding: 30px; }
+      body { background: #fff; }
+      .hero { padding: 25px 40px; border: none; }
+      .container { margin-top: 5px; }
+      .card, .award-item { box-shadow: none; border: 1px solid #E2E8F0; }
     }
   </style>
 </head>
 <body>
 
+  <header class="hero">
+    ${d.photoUrl ? `<img src="${d.photoUrl}" class="profile-img">` : `
+      <div class="profile-img" style="display: flex; align-items: center; justify-content: center; font-size: 40pt; font-weight: 800; color: rgba(255,255,255,0.1);">
+        ${d.name.charAt(0)}
+      </div>
+    `}
+    <div class="hero-content">
+      <h1 class="hero-name">${d.name}</h1>
+      <div class="hero-role">${d.role}</div>
+      <div class="hero-grid">
+        <a href="mailto:${d.email}" class="contact-link">📧 ${d.email}</a>
+        <div class="contact-badge">📱 ${d.phone}</div>
+        <div class="contact-badge">📍 ${d.location}</div>
+        <div class="contact-badge">🆔 ID: ${d.cognizantId}</div>
+        ${d.linkedIn ? `<a href="${d.linkedIn}" target="_blank" class="contact-link">🔗 LinkedIn</a>` : ''}
+        ${d.github ? `<a href="${d.github}" target="_blank" class="contact-link">💻 GitHub</a>` : ''}
+      </div>
+    </div>
+  </header>
+
   <div class="container">
-    
-    <!-- LEFT SIDEBAR -->
-    <div class="sidebar">
+    <div class="main-grid">
       
-      <!-- Photo -->
-      <div class="photo-section">
-        <div class="photo-placeholder">PHOTO</div>
-      </div>
-
-      <!-- Education -->
-      <div class="sidebar-section">
-        <div class="section-title">Education</div>
-        ${edu || '<p class="empty">—</p>'}
-      </div>
-
-      <!-- Skills -->
-      <div class="sidebar-section">
-        <div class="section-title">Skills</div>
-        ${skillEntries || '<p class="empty">—</p>'}
-      </div>
-
-    </div>
-
-    <!-- RIGHT CONTENT -->
-    <div class="content">
-      
-      <!-- Header -->
-      <div class="header">
-        <div class="name">${d.name.split(' ').slice(0, -1).join(' ')} <span class="highlight">${d.name.split(' ').slice(-1)[0]}</span></div>
-        <div class="title-badge">↳ ${d.role}</div>
-        <div class="contact-info">
-          <div class="contact-item">
-            <span class="contact-icon">●</span>
-            <span>${d.phone}</span>
+      <div class="left-col">
+        <section class="section">
+          <div class="section-header">
+            <h2 class="section-title">Featured Project</h2>
+            <div class="line"></div>
           </div>
-          <div class="contact-item">
-            <span class="contact-icon">✉</span>
-            <span>${d.email}</span>
-          </div>
-          <div class="contact-item">
-            <span class="contact-icon">📍</span>
-            <span>${d.location}</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Profile -->
-      <div class="content-section">
-        <div class="content-title">Profile</div>
-        <div class="profile-text">Professional with expertise in ${d.role}${d.track ? ' and ' + d.track : ''}. Dedicated to delivering high-quality results and continuous improvement. Strong background in strategic planning and execution.</div>
-      </div>
-
-      <!-- Experience/Capstone -->
-      ${cap.title ? `<div class="content-section">
-        <div class="content-title">Experience</div>
-        <div class="timeline">
           ${capHtml}
-        </div>
-      </div>` : ''}
+        </section>
 
-      <!-- Achievements -->
-      ${ach ? `<div class="content-section">
-        <div class="content-title">Achievements</div>
-        <div class="timeline">
-          ${ach}
-        </div>
-      </div>` : ''}
+        <section class="section">
+          <div class="section-header">
+            <h2 class="section-title">Education</h2>
+            <div class="line"></div>
+          </div>
+          ${edu}
+        </section>
 
-      <!-- Volunteering -->
-      ${vol ? `<div class="content-section">
-        <div class="content-title">Volunteering</div>
-        <div class="timeline">
-          ${vol}
-        </div>
-      </div>` : ''}
+        <section class="section">
+          <div class="section-header">
+            <h2 class="section-title">Professional Achievements</h2>
+            <div class="line"></div>
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+            ${ach}
+          </div>
+        </section>
+      </div>
 
-      <!-- Sports & Arts -->
-      ${d.sportsArts && d.sportsArts.length > 0 ? `<div class="content-section">
-        <div class="content-title">Achievements</div>
-        <div class="strengths-wrap">
-          ${section(d.sportsArts, (s) => `<span class="strength-pill">${escapeHtml(s.name)}</span>`)}
-        </div>
-      </div>` : ''}
+      <div class="right-col">
+        <section class="section">
+          <div class="section-header">
+            <h2 class="section-title">Skills</h2>
+          </div>
+          <div class="card glass">
+            ${skillEntries}
+          </div>
+        </section>
 
-      <!-- Strengths -->
-      ${str ? `<div class="content-section">
-        <div class="content-title">Core Strengths</div>
-        <div class="strengths-wrap">
-          ${str}
-        </div>
-      </div>` : ''}
+        <section class="section">
+          <div class="section-header">
+            <h2 class="section-title">Strengths</h2>
+          </div>
+          <div class="tag-cloud">
+            ${section(d.strengths, (s) => `<span class="skill-tag" style="background: var(--primary-soft); color: var(--primary); border: none;">${escapeHtml(s.name)}</span>`)}
+          </div>
+        </section>
+
+        <section class="section">
+          <div class="section-header">
+            <h2 class="section-title">Activities</h2>
+          </div>
+          ${section(d.sportsArts, (s) => `
+            <div class="card" style="padding: 12px; margin-bottom: 10px; display: flex; align-items: center; gap: 10px;">
+              <span style="font-size: 16pt;">${s.type === 'sports' ? '🏀' : '🎨'}</span>
+              <div>
+                <div style="font-size: 9pt; font-weight: 700; color: var(--dark);">${escapeHtml(s.name)}</div>
+                <div style="font-size: 8pt; color: var(--muted);">${escapeHtml(s.achievement || s.type)}</div>
+              </div>
+            </div>
+          `)}
+        </section>
+      </div>
 
     </div>
-
   </div>
 
 </body>
@@ -641,81 +415,31 @@ function classicTemplate(d) {
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   MODERN – navy header with photo circle, left sidebar, right main panel
-   (UNCHANGED - ORIGINAL)
+   MODERN – Stylish Sidebar Portfolio Design
+   • Asymmetric layout with high-contrast sidebar
+   • Dynamic header with role-based branding
+   • Card-based project highlights and professional iconography
+   • Optimized for a modern, sleek single-page brand
 ───────────────────────────────────────────────────────────────────────────── */
 function modernTemplate(d) {
-  /* sidebar – education */
+  /* education entries */
   const edu = section(
     d.education,
     (e) => `
-    <div class="edu-item">
-      <div class="edu-degree">${escapeHtml(e.degree)}</div>
-      <div class="edu-inst">${escapeHtml(e.institution)}</div>
-      ${e.year || e.percentage
-        ? `<div class="edu-meta">${e.year ? escapeHtml(e.year) : ''}${e.percentage ? ` · ${escapeHtml(e.percentage)}` : ''}</div>`
-        : ''}
+    <div class="side-item">
+      <div class="side-item-title">${escapeHtml(e.degree)}</div>
+      <div class="side-item-meta">${escapeHtml(e.institution)}</div>
+      <div class="side-item-year">${e.year ? escapeHtml(e.year) : ''}</div>
     </div>`
   );
 
-  /* sidebar – skills */
-  const skillRows = section(
+  /* technical skills */
+  const skillEntries = section(
     d.skillGroups,
     (g) => `
-    <div class="skill-group">
-      <div class="skill-cat">${escapeHtml(g.name)}</div>
-      <div class="skill-items">${(g.items || []).map(escapeHtml).join(', ')}</div>
-    </div>`
-  );
-
-  /* sidebar – strengths */
-  const str = section(d.strengths, (s) => `<li>${escapeHtml(s.name)}</li>`);
-
-  /* sidebar – sports & arts */
-  const sports = section(
-    d.sportsArts,
-    (s) => `
-    <div class="sport-item">
-      <div class="sport-name">${escapeHtml(s.name)}</div>
-      ${s.achievement ? `<div class="sport-sub">${escapeHtml(s.achievement)}</div>` : ''}
-      ${s.level ? `<div class="sport-sub">${escapeHtml(s.level)}</div>` : ''}
-    </div>`
-  );
-
-  /* main – capstone */
-  const cap = d.capstone;
-  const capHtml = cap.title
-    ? `<div class="cap-title">${escapeHtml(cap.title)}</div>
-       ${cap.role ? `<div class="cap-meta">Role: ${escapeHtml(cap.role)}</div>` : ''}
-       ${cap.techStack?.length ? `<div class="cap-meta">Stack: ${(cap.techStack || []).map(escapeHtml).join(', ')}</div>` : ''}
-       ${(cap.responsibilities || []).length
-         ? `<ul class="cap-list">${(cap.responsibilities || []).map((r) => `<li>${escapeHtml(r)}</li>`).join('')}</ul>`
-         : ''}
-       ${(cap.outcomes || []).length
-         ? `<ul class="cap-list">${(cap.outcomes || []).map((o) => `<li>Outcomes: ${escapeHtml(o)}</li>`).join('')}</ul>`
-         : ''}`
-    : '<p class="empty">—</p>';
-
-  /* main – achievements */
-  const ach = section(
-    d.achievements,
-    (a) => `
-    <div class="ach-row">
-      <span class="ach-title">${escapeHtml(a.title)}</span>
-      ${a.date ? `<span class="ach-date">${escapeHtml(a.date)}</span>` : ''}
-    </div>`
-  );
-
-  /* main – volunteering */
-  const vol = section(
-    d.volunteering,
-    (v) => `
-    <div class="vol-block">
-      <div class="vol-header">
-        <span class="vol-org">${escapeHtml(v.organization)}</span>
-        <span class="vol-role">${escapeHtml(v.role)}</span>
-      </div>
-      ${v.description ? `<div class="vol-desc">${escapeHtml(v.description)}</div>` : ''}
+    <div class="skill-row">
+      <div class="skill-name">${escapeHtml(g.name)}</div>
+      <div class="skill-tags">${(g.items || []).map(escapeHtml).join(', ')}</div>
     </div>`
   );
 
@@ -723,267 +447,279 @@ function modernTemplate(d) {
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>Dossier — ${d.name}</title>
-  <link href="https://fonts.googleapis.com/css2?family=Lora:wght@600;700&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
+  <title>${d.name} | Modern Portfolio</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --navy:     #1b3a5c;
-      --navy-dk:  #162e4a;
-      --navy-lt:  #2c5282;
-      --accent:   #2a7abf;
-      --accent2:  #3b8fd1;
-      --muted:    #64748b;
-      --line:     #d4dde8;
-      --bg:       #f5f7fa;
-      --white:    #ffffff;
-      --text:     #1e2d3d;
-      --sb-w:     260px;
+      --primary: #2563eb;
+      --accent: #0ea5e9;
+      --dark: #0f172a;
+      --side-bg: #f8fafc;
+      --text: #1e293b;
+      --text-dark: #0f172a;
+      --white: #ffffff;
+      --muted: #475569;
     }
+    
     * { box-sizing: border-box; margin: 0; padding: 0; }
+    
     body {
-      font-family: 'Source Sans 3', 'Segoe UI', sans-serif;
-      font-size: 12.65px;
-      line-height: 1.5;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 9.5pt;
+      line-height: 1.4;
       color: var(--text);
-      background: var(--bg);
-      max-width: 900px;
-      margin: 0 auto;
+      background: var(--white);
     }
 
-    /* ── HEADER ── */
-    .header {
-      background: var(--navy-dk);
+    .wrapper {
       display: flex;
-      align-items: center;
-      gap: 22px;
-      padding: 20px 28px 20px 24px;
+      min-height: 100vh;
     }
-    .photo-wrap {
-      flex-shrink: 0;
-      width: 84px; height: 84px;
-      border-radius: 50%;
-      border: 3px solid rgba(255,255,255,0.3);
-      background: var(--navy-lt);
+
+    /* ─── SIDEBAR ─── */
+    .sidebar {
+      width: 30%;
+      background: var(--side-bg);
+      padding: 20px 15px;
+      border-right: 1px solid #e2e8f0;
+    }
+
+    .profile-photo {
+      width: 90px;
+      height: 90px;
+      background: #e2e8f0;
+      border-radius: 16px;
+      margin: 0 auto 15px;
+      overflow: hidden;
       display: flex;
-      flex-direction: column;
       align-items: center;
       justify-content: center;
-      overflow: hidden;
-      position: relative;
-    }
-    .photo-wrap svg { opacity: 0.55; }
-    .photo-label {
-      font-size: 8.05px;
-      color: rgba(255,255,255,0.65);
-      letter-spacing: 0.4px;
-      margin-top: 2px;
-    }
-    .header-info { flex: 1; }
-    .header-name {
-      font-family: 'Lora', Georgia, serif;
-      font-size: 31.05px;
-      font-weight: 700;
-      color: #fff;
-      line-height: 1.1;
-    }
-    .header-role {
-      font-size: 12.65px;
-      color: #a8c4e0;
-      margin-top: 5px;
-    }
-    .header-role strong { color: #c8ddf0; font-weight: 600; }
-    .header-contact {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0;
-      margin-top: 9px;
-      font-size: 11.5px;
-      color: #b8cfe6;
-    }
-    .header-contact span {
-      padding-right: 10px;
-      margin-right: 10px;
-      border-right: 1px solid rgba(255,255,255,0.2);
-    }
-    .header-contact span:last-child { border-right: none; }
-
-    /* ── BODY WRAPPER ── */
-    .body {
-      display: flex;
-      align-items: stretch;
-      background: var(--white);
-      border-top: 3px solid var(--accent2);
+      border: 2px solid #fff;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
     }
 
-    /* ── SIDEBAR ── */
-    .sidebar {
-      width: var(--sb-w);
-      flex-shrink: 0;
-      background: var(--white);
-      border-right: 1px solid var(--line);
-      padding: 16px 16px 24px;
+    .profile-photo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
     }
-    .sb-section { margin-bottom: 18px; }
-    .sb-title {
-      font-size: 9.77px;
+
+    .profile-photo .placeholder {
+      font-size: 24pt;
+      font-weight: 800;
+      color: #94a3b8;
+    }
+
+    .side-section { margin-bottom: 20px; }
+    .side-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 9.5pt;
       font-weight: 700;
+      color: var(--primary);
       text-transform: uppercase;
-      letter-spacing: 1.3px;
-      color: var(--accent);
-      margin-bottom: 9px;
-    }
-    /* education */
-    .edu-item { margin-bottom: 11px; }
-    .edu-degree { font-weight: 700; font-size: 12.65px; color: var(--text); }
-    .edu-inst { font-size: 11.5px; color: var(--muted); margin-top: 1px; }
-    .edu-meta { font-size: 11.5px; color: var(--accent); margin-top: 2px; font-weight: 600; }
-    /* skills */
-    .skill-group { margin-bottom: 9px; }
-    .skill-cat { font-weight: 700; font-size: 12.07px; color: var(--text); }
-    .skill-items { font-size: 11.5px; color: var(--muted); margin-top: 1px; line-height: 1.4; }
-    /* strengths */
-    .sb-list { list-style: none; padding: 0; }
-    .sb-list li {
-      font-size: 12.07px;
-      padding: 2px 0 2px 14px;
-      position: relative;
-      color: var(--text);
-    }
-    .sb-list li::before {
-      content: '';
-      width: 5px; height: 5px;
-      border-radius: 50%;
-      background: var(--accent);
-      position: absolute; left: 0; top: 6px;
-    }
-    /* sports */
-    .sport-item { margin-bottom: 9px; }
-    .sport-name { font-weight: 700; font-size: 12.65px; color: var(--text); }
-    .sport-sub { font-size: 11.5px; color: var(--muted); margin-top: 1px; }
-
-    /* ── MAIN PANEL ── */
-    .main { flex: 1; padding: 16px 22px 24px; }
-    .main-section { margin-bottom: 18px; }
-    .main-title {
-      font-size: 10.35px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 1.3px;
-      color: var(--text);
-      border-bottom: 1.5px solid var(--accent2);
+      letter-spacing: 1px;
+      margin-bottom: 8px;
       padding-bottom: 4px;
-      margin-bottom: 10px;
+      border-bottom: 1.5px solid #e2e8f0;
     }
-    /* capstone */
-    .cap-title {
-      font-family: 'Lora', serif;
-      font-size: 15.52px;
-      font-weight: 700;
+
+    .contact-item {
+      margin-bottom: 6px;
+      font-size: 8pt;
+      display: flex;
+      align-items: center;
+      gap: 6px;
       color: var(--text);
+      text-decoration: none;
+    }
+
+    .side-item { margin-bottom: 8px; }
+    .side-item-title { font-weight: 700; color: var(--text-dark); font-size: 8.5pt; }
+    .side-item-meta { font-size: 8pt; color: var(--text); margin-top: 1px; }
+    .side-item-year { font-weight: 700; color: var(--primary); font-size: 8pt; margin-top: 1px; }
+
+    /* ─── MAIN CONTENT ─── */
+    .main {
+      width: 70%;
+      padding: 25px 30px;
+    }
+
+    header { margin-bottom: 20px; }
+    .header-name {
+      font-family: 'Outfit', sans-serif;
+      font-size: 26pt;
+      font-weight: 800;
+      color: var(--dark);
+      letter-spacing: -1px;
+      line-height: 1.1;
       margin-bottom: 4px;
     }
-    .cap-meta { font-size: 12.07px; color: var(--muted); margin-bottom: 2px; }
-    .cap-list {
-      margin: 6px 0 0;
-      padding-left: 16px;
-      font-size: 12.07px;
-      color: var(--text);
-    }
-    .cap-list li { margin-bottom: 3px; }
-    /* achievements */
-    .ach-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      padding: 5px 0;
-      border-bottom: 1px solid var(--line);
-      font-size: 12.07px;
-    }
-    .ach-row:last-child { border-bottom: none; }
-    .ach-title { color: var(--text); font-weight: 500; }
-    .ach-date {
-      color: var(--accent);
-      font-size: 11.5px;
-      white-space: nowrap;
-      margin-left: 8px;
+
+    .header-role {
+      font-family: 'Outfit', sans-serif;
+      font-size: 13pt;
       font-weight: 600;
+      color: var(--primary);
+      margin-bottom: 2px;
+    }
+
+    .header-track {
+      font-size: 10pt;
+      font-weight: 600;
+      color: var(--accent);
+    }
+
+    .main-section { margin-bottom: 20px; }
+    .main-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 13pt;
+      font-weight: 700;
+      color: var(--dark);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .main-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: #f1f5f9;
+    }
+
+    .summary-card {
+      background: #f8fafc;
+      padding: 12px;
+      border-radius: 10px;
+      line-height: 1.5;
+      font-size: 9.5pt;
+      border-left: 3px solid var(--primary);
+    }
+
+    .project-card {
+      background: #f8fafc;
+      color: var(--text);
+      padding: 15px;
+      border-radius: 12px;
+      margin-bottom: 12px;
+      border-left: 4px solid var(--accent);
+    }
+
+    .project-card h3 { font-size: 11pt; color: var(--text-dark); margin-bottom: 3px; }
+    .project-card .role { color: var(--primary); font-weight: 700; font-size: 8pt; margin-bottom: 6px; }
+    .project-card .desc { font-size: 8.5pt; color: #475569; line-height: 1.4; }
+
+    .skill-row { margin-bottom: 8px; }
+    .skill-name { font-weight: 700; font-size: 8pt; text-transform: uppercase; color: #64748b; margin-bottom: 2px; }
+    .skill-tags { font-size: 9pt; color: var(--text-dark); }
+
+    .list-item {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+
+    .list-dot {
+      width: 4px; height: 4px;
+      background: var(--primary);
+      border-radius: 50%;
+      margin-top: 6px;
       flex-shrink: 0;
     }
-    /* volunteering */
-    .vol-block { margin-bottom: 11px; }
-    .vol-header { display: flex; justify-content: space-between; align-items: baseline; }
-    .vol-org { font-weight: 700; font-size: 12.65px; color: var(--text); }
-    .vol-role { font-size: 11.5px; color: var(--accent); font-weight: 600; }
-    .vol-desc { font-size: 11.5px; color: var(--muted); margin-top: 2px; }
 
-    .empty { color: var(--muted); font-style: italic; }
+    @media print {
+      body { -webkit-print-color-adjust: exact; }
+      .wrapper { height: auto; }
+      .sidebar { background: var(--side-bg) !important; }
+      .project-card { background: #f8fafc !important; color: var(--text) !important; }
+    }
   </style>
 </head>
 <body>
 
-  <!-- HEADER -->
-  <div class="header">
-    <div class="photo-wrap">
-      <svg width="44" height="44" viewBox="0 0 44 44" fill="none">
-        <circle cx="22" cy="15" r="9" fill="white"/>
-        <ellipse cx="22" cy="40" rx="17" ry="10" fill="white"/>
-      </svg>
-      <span class="photo-label">YOUR PHOTO</span>
-    </div>
-    <div class="header-info">
-      <div class="header-name">${d.name}</div>
-      <div class="header-role">
-        <strong>${d.role}</strong>${d.track ? ` &nbsp;·&nbsp; ${d.track}` : ''}
+  <div class="wrapper">
+    <aside class="sidebar">
+      <div class="profile-photo">
+        ${d.photoUrl ? `<img src="${d.photoUrl}">` : `<span class="placeholder">${d.name.charAt(0)}</span>`}
       </div>
-      <div class="header-contact">
-        <span>${d.email}</span>
-        <span>${d.phone}</span>
-        <span>${d.location}</span>
-        <span>ID: ${d.cognizantId}</span>
+
+      <div class="side-section">
+        <h2 class="side-title">Contact</h2>
+        <a href="mailto:${d.email}" class="contact-item">📧 ${d.email}</a>
+        <div class="contact-item">📱 ${d.phone}</div>
+        <div class="contact-item">📍 ${d.location}</div>
+        <div class="contact-item">🆔 ID: ${d.cognizantId}</div>
+        ${d.linkedIn ? `<a href="${d.linkedIn}" target="_blank" class="contact-item">🔗 LinkedIn</a>` : ''}
+        ${d.github ? `<a href="${d.github}" target="_blank" class="contact-item">💻 GitHub</a>` : ''}
       </div>
-    </div>
+
+      <div class="side-section">
+        <h2 class="side-title">Education</h2>
+        ${edu}
+      </div>
+
+      <div class="side-section">
+        <h2 class="side-title">Strengths</h2>
+        ${section(d.strengths, (s) => `
+          <div class="side-item">
+            <div class="side-item-title">${escapeHtml(s.name)}</div>
+          </div>
+        `)}
+      </div>
+    </aside>
+
+    <main class="main">
+      <header>
+        <h1 class="header-name">${d.name}</h1>
+        <div class="header-role">${d.role}</div>
+        <div class="header-track">${d.track}</div>
+      </header>
+
+      <section class="main-section">
+        <h2 class="main-title">Profile</h2>
+        <div class="summary-card">
+          Driven <strong>${d.role}</strong> with a specialized focus on <strong>${d.track}</strong>. 
+          Passionate about architecting efficient solutions and driving technical innovation.
+        </div>
+      </section>
+
+      <section class="main-section">
+        <h2 class="main-title">Key Projects</h2>
+        ${d.capstone.title ? `
+          <div class="project-card">
+            <h3>${escapeHtml(d.capstone.title)}</h3>
+            <div class="role">${escapeHtml(d.capstone.role)}</div>
+            <div class="desc">${escapeHtml(d.capstone.description)}</div>
+            ${(d.capstone.responsibilities || []).length ? `
+              <ul class="project-list" style="margin-top: 8px; padding-left: 15px; font-size: 8.5pt; color: var(--text);">
+                ${d.capstone.responsibilities.map(r => `<li style="margin-bottom: 4px;">${escapeHtml(r)}</li>`).join('')}
+              </ul>
+            ` : ''}
+          </div>
+        ` : ''}
+      </section>
+
+      <section class="main-section">
+        <h2 class="main-title">Expertise</h2>
+        ${skillEntries}
+      </section>
+
+      <section class="main-section">
+        <h2 class="main-title">Achievements</h2>
+        ${section(d.achievements, (a) => `
+          <div class="list-item">
+            <div class="list-dot"></div>
+            <div>
+              <div style="font-weight: 700; color: var(--text-dark);">${escapeHtml(a.title)}</div>
+              <div style="font-size: 8.5pt; color: var(--muted);">${escapeHtml(a.description)}</div>
+            </div>
+          </div>
+        `)}
+      </section>
+    </main>
   </div>
 
-  <!-- BODY -->
-  <div class="body">
-
-    <!-- SIDEBAR -->
-    <div class="sidebar">
-      <div class="sb-section">
-        <div class="sb-title">Education</div>
-        ${edu || '<p class="empty">—</p>'}
-      </div>
-      <div class="sb-section">
-        <div class="sb-title">Technical Skills</div>
-        ${skillRows || '<p class="empty">—</p>'}
-      </div>
-      <div class="sb-section">
-        <div class="sb-title">Strengths</div>
-        <ul class="sb-list">${str || '<li>—</li>'}</ul>
-      </div>
-      <div class="sb-section">
-        <div class="sb-title">Sports &amp; Arts</div>
-        ${sports || '<p class="empty">—</p>'}
-      </div>
-    </div>
-
-    <!-- MAIN -->
-    <div class="main">
-      <div class="main-section">
-        <div class="main-title">Capstone Project</div>
-        ${capHtml}
-      </div>
-      <div class="main-section">
-        <div class="main-title">Achievements &amp; Awards</div>
-        ${ach || '<p class="empty">—</p>'}
-      </div>
-      <div class="main-section">
-        <div class="main-title">Volunteering</div>
-        ${vol || '<p class="empty">—</p>'}
-      </div>
-    </div>
-
-  </div>
 </body>
 </html>`;
 }
@@ -1411,10 +1147,12 @@ function executiveTemplate(d) {
     <div class="header-name">${d.name}</div>
     <div class="header-title">${d.role}${d.track ? ' • ' + d.track : ''}</div>
     <div class="header-contact">
-      <div class="header-contact-item">✉ ${d.email}</div>
-      <div class="header-contact-item">✆ ${d.phone}</div>
+      <div class="header-contact-item">📧 ${d.email}</div>
+      <div class="header-contact-item">📱 ${d.phone}</div>
       <div class="header-contact-item">📍 ${d.location}</div>
-      <div class="header-contact-item">ID: ${d.cognizantId}</div>
+      <div class="header-contact-item">🆔 ID: ${d.cognizantId}</div>
+      ${d.linkedIn ? `<a href="${d.linkedIn}" target="_blank" class="header-contact-item" style="color: var(--accent); text-decoration: none;">🔗 LinkedIn</a>` : ''}
+      ${d.github ? `<a href="${d.github}" target="_blank" class="header-contact-item" style="color: var(--accent); text-decoration: none;">💻 GitHub</a>` : ''}
     </div>
   </div>
 
