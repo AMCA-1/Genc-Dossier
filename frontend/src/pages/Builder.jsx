@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import {
   getResumeTemplates,
   getWebTemplates,
@@ -129,7 +130,16 @@ function mergeWithInitial(loaded) {
 
 export default function Builder() {
   const { user } = useAuth();
+  const { stepId } = useParams();
   const [step, setStep] = useState(0);
+
+  useEffect(() => {
+    if (stepId) {
+      const idx = STEPS.findIndex((s) => s.id === stepId);
+      if (idx !== -1) setStep(idx);
+    }
+  }, [stepId]);
+
   const [data, setData] = useState(initialDossier);
   const [savedId, setSavedId] = useState(null);
   const [shareId, setShareId] = useState(null);
@@ -446,6 +456,7 @@ export default function Builder() {
                 update={update}
                 save={save}
                 dossierId={savedId}
+                setSavedId={setSavedId}
                 loading={loading}
                 savedId={savedId}
                 shareId={shareId}

@@ -21,6 +21,7 @@ export default function App() {
           <Route path="login" element={<GuestOnlyRoute><Login /></GuestOnlyRoute>} />
           <Route path="signup" element={<GuestOnlyRoute><Signup /></GuestOnlyRoute>} />
           <Route path="build" element={<ProtectedRoute><Builder /></ProtectedRoute>} />
+          <Route path="build/:stepId" element={<ProtectedRoute><Builder /></ProtectedRoute>} />
           <Route path="app/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
         </Route>
         <Route path="p/:shareId" element={<SharePortfolio />} />

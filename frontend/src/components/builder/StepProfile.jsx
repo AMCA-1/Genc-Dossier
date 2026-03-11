@@ -4,7 +4,7 @@ const inputClass =
 import { useState } from 'react';
 import { uploadProfilePhoto, deleteProfilePhoto } from '../../api/client';
 
-export default function StepProfile({ data, update, dossierId, validationErrors = {} }) {
+export default function StepProfile({ data, update, dossierId, setSavedId, validationErrors = {} }) {
   const p = data.profile || {};
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState('');
@@ -19,6 +19,9 @@ export default function StepProfile({ data, update, dossierId, validationErrors 
     try {
       const result = await uploadProfilePhoto(dossierId, file);
       update('profile.photoUrl', result.photoUrl);
+      if (result.dossierId && setSavedId) {
+        setSavedId(result.dossierId);
+      }
     } catch (error) {
       setUploadError(error.message || 'Failed to upload photo');
     } finally {

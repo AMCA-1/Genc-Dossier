@@ -6,7 +6,19 @@ const router = express.Router();
 
 router.post('/', authMiddleware, async (req, res) => {
   try {
-    const dossier = new Dossier({ ...req.body, userId: req.user._id });
+    // Try to find an existing dossier for this user first
+    let dossier = await Dossier.findOne({ userId: req.user._id });
+    
+    if (dossier) {
+      // If it exists, update it with the new data
+      Object.assign(dossier, req.body);
+      dossier.userId = req.user._id; // Ensure userId remains correct
+      await dossier.save();
+      return res.status(200).json(dossier);
+    }
+    
+    // Otherwise create a new one
+    dossier = new Dossier({ ...req.body, userId: req.user._id });
     await dossier.save();
     res.status(201).json(dossier);
   } catch (err) {

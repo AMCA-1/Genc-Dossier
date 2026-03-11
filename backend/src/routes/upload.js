@@ -93,6 +93,9 @@ router.post('/profile-photo', authMiddleware, upload.single('photo'), async (req
         profile: {}
       });
     }
+
+    // Ensure profile exists before setting photoUrl
+    dossier.profile = dossier.profile || {};
  
     // 3️⃣ Upload image to Cloudinary
     const photoUrl = await uploadPhotoToCloudinary(
@@ -107,7 +110,8 @@ router.post('/profile-photo', authMiddleware, upload.single('photo'), async (req
  
     res.json({
       message: "Photo uploaded successfully",
-      photoUrl
+      photoUrl,
+      dossierId: dossier._id
     });
  
   } catch (error) {
